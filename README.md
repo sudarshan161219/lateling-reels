@@ -143,11 +143,11 @@ Each `request_id` can be used once, because a release tag must be unique.
 
 ## n8n workflow
 
-`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, and ends with the MP4 address. It does not post anything. Connect your posting nodes to its last node.
+`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then posts the MP4 to YouTube and Instagram. Scheduled runs are on Tuesday and Friday at 09:00.
 
 ```
-Daily schedule / Run manually
-  -> Config                 composition for today, an angle, a store type, request id
+Twice a week / Run manually
+  -> Config                 composition for this run, an angle, a store type, request id
   -> Fetch prompt           prompts/script-writer.md from this repository
   -> Recent reels           hooks of the last reels, so they are not repeated
   -> Build Gemini request
@@ -158,15 +158,23 @@ Daily schedule / Run manually
   -> Get release            reel-<requestId>; retried every 30 s, up to 20 times
   -> Reel ready             videoUrl, fileName, caption, hashtags, postText, postTextShort,
                             hook, composition, feature, props
+  -> Post it?               yes for scheduled runs, no for runs started by hand
+  -> Download video         the MP4 as a file
+  -> YouTube upload         a vertical video under 3 minutes is listed as a Short
+  -> Instagram container    hands Instagram the videoUrl and the post text
+  -> Instagram status       checked every 30 s until Instagram has processed the video
+  -> Instagram publish
+  -> Posted                 instagramMediaId, youtubeUrl, youtubeError
 ```
 
 ### Setup
 
 1. In n8n choose **Import from File** and pick the JSON file.
-2. Open the **Config** node. Check `OWNER`, `REPO`, the Gemini model, and the weekday rotation. `FORCE_COMPOSITION` and `TOPIC` are there for one-off runs.
+2. Open the **Config** node. Check `OWNER`, `REPO`, the Gemini model, and the rotation. `FORCE_COMPOSITION` and `TOPIC` are there for one-off runs.
 3. **Gemini script** node: select your Header Auth credential for Gemini (header name `x-goog-api-key`).
 4. **Start render** and **Get release** nodes: select a Header Auth credential for GitHub. Header name `Authorization`, value `Bearer <token>`. Use a fine-grained personal access token limited to this repository with **Actions: read and write** and **Contents: read**.
-5. Run it once with **Run manually**, then connect your posting nodes after **Reel ready** and activate the workflow.
+5. Run it once with **Run manually**. This renders a reel and does not post it.
+6. Set up posting (next section), then activate the workflow.
 
 Gemini also writes the text for the post. **Reel ready** gives it in four forms:
 
@@ -179,11 +187,35 @@ Gemini also writes the text for the post. **Reel ready** gives it in four forms:
 
 To keep videos from coming out alike, each run gives Gemini three things: an angle picked at random from `ANGLES` in the **Config** node, a store type picked from `STORES`, and the hooks of recent reels to avoid. The hooks are read from the release notes, so the list covers the reels that still have a release. Edit `ANGLES` to steer what the videos are about. Every angle must be about something the app really does.
 
-A run started with **Run manually** picks the composition and feature at random. Scheduled runs follow the weekday rotation.
+A run started with **Run manually** picks the composition and feature at random. Scheduled runs go through `ROTATION` in order, one entry per run, and FeatureDemo runs go through `FEATURES` in order.
 
 If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
 
 **Fetch prompt** reads the prompt from the `main` branch through the GitHub API (`api.github.com`), so a prompt change takes effect once it is pushed. It needs no token while the repository is public.
+
+### Posting
+
+Scheduled runs post every reel. Runs started by hand post only when `POST_ON_MANUAL` is `true` in the **Config** node.
+
+**Schedule.** The **Twice a week** node holds the cron expression `0 9 * * 2,5`: Tuesday and Friday at 09:00, about 8 reels a month. For one a week, about 4 a month, change it to `0 9 * * 2`. The workflow's time zone is set to `Asia/Kolkata` under its settings. n8n must be running at that time and the workflow must be active. A run that is missed because the computer was off is not made up later.
+
+**YouTube.**
+
+1. In the Google Cloud console create a project, enable **YouTube Data API v3**, and create an OAuth client of type Web application. As the redirect address use the one n8n shows in the credential window.
+2. On the OAuth consent screen set the publishing status to **In production**. In **Testing** the sign-in expires after 7 days.
+3. In n8n create a **YouTube OAuth2 API** credential with the client id and secret, sign in with the channel's Google account, and select it in the **YouTube upload** node.
+
+Google keeps videos uploaded by a new API project private until the project has passed its API audit. Until then the upload works but the Short is not public, whatever `YOUTUBE_PRIVACY` says. The audit is requested with Google's YouTube API Services audit form.
+
+**Instagram.** The account must be a business or creator account connected to a Facebook Page.
+
+1. At developers.facebook.com create an app and get an access token with the permissions `instagram_basic`, `instagram_content_publish`, `pages_show_list` and `pages_read_engagement`. Exchange it for a long-lived token, since a short one expires within hours.
+2. In n8n create a **Facebook Graph API** credential with that token and select it in the three Instagram nodes.
+3. Put the account's Instagram id in `IG_USER_ID` in the **Config** node. It is the `instagram_business_account.id` of the Page in the Graph API, not the user name.
+
+Instagram downloads the video itself from `videoUrl`, so the repository must stay public.
+
+If the YouTube upload fails, the run continues to Instagram and **Posted** shows the reason in `youtubeError`. If Instagram fails, the run stops with an error. To post to one platform only, remove the other one's nodes and connect around them.
 
 ### The two GitHub calls
 
