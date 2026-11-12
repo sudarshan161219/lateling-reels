@@ -86,11 +86,19 @@ jobs:
           TAG: ${{ steps.name.outputs.tag }}
           FILE: ${{ steps.name.outputs.file }}
         run: |
+          # The hook goes into the notes so the script writer can avoid repeating recent ones.
+          node -e '
+            const p = JSON.parse(require("fs").readFileSync("out/props.json", "utf8"));
+            const one = (s) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, 120);
+            const lines = [`Rendered by workflow run ${process.env.GITHUB_RUN_ID}.`, "", `Hook: ${one(p.hook)}`, `Composition: ${process.env.COMPOSITION}`];
+            if (p.feature) lines.push(`Feature: ${one(p.feature)}`);
+            require("fs").writeFileSync("out/notes.md", lines.join("\n") + "\n");
+          '
           gh release create "$TAG" "out/$FILE" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "$COMPOSITION reel ($TAG)" \
-            --notes "Rendered by workflow run $GITHUB_RUN_ID."
+            --notes-file out/notes.md
           echo "url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$TAG/$FILE" >> "$GITHUB_OUTPUT"
 
       # Keeps the Releases page short. Only touches releases this workflow made (tag reel-*).

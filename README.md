@@ -147,8 +147,9 @@ Each `request_id` can be used once, because a release tag must be unique.
 
 ```
 Daily schedule / Run manually
-  -> Config                 composition for today, request id
+  -> Config                 composition for today, an angle, a store type, request id
   -> Fetch prompt           prompts/script-writer.md from this repository
+  -> Recent reels           hooks of the last reels, so they are not repeated
   -> Build Gemini request
   -> Gemini script          returns the props JSON, with the voiceover lines
   -> Parse props            checks it is JSON, no em dashes, removes "audio", takes out the post text
@@ -175,6 +176,10 @@ Gemini also writes the text for the post. **Reel ready** gives it in four forms:
 | `hashtags` | a list of 5 to 8 tags, each with its `#` |
 | `postText` | the caption, a blank line, then all hashtags. For Instagram and Facebook |
 | `postTextShort` | the caption with as many hashtags as fit in 280 characters. For X |
+
+To keep videos from coming out alike, each run gives Gemini three things: an angle picked at random from `ANGLES` in the **Config** node, a store type picked from `STORES`, and the hooks of recent reels to avoid. The hooks are read from the release notes, so the list covers the reels that still have a release. Edit `ANGLES` to steer what the videos are about. Every angle must be about something the app really does.
+
+A run started with **Run manually** picks the composition and feature at random. Scheduled runs follow the weekday rotation.
 
 If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
 

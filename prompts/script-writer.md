@@ -8,8 +8,9 @@ The request tells you:
 
 - `composition`: one of `BeforeAfter`, `FeatureDemo`, `Tips`, `Trust`
 - `feature` (optional, `FeatureDemo` only): the feature to show. Use it as the `feature` value
-- `topic` (optional): an angle to focus on
-- `avoid` (optional): hooks or angles used recently, so you do not repeat them
+- `topic` (optional): the angle of this video. Build the hook, the captions and the spoken lines around it
+- `store` (optional): what the example store sells. Invent a store name, products and a sign-off that fit it
+- `avoid` (optional): hooks of recent videos. Your hook must not repeat any of them, reuse their opening words, or say the same thing in other words
 
 ## Output
 
@@ -175,7 +176,9 @@ Keep `template.body` under 240 characters with at most 4 line breaks (`\n`).
 
 ## Examples
 
-One valid output per composition.
+One valid output per composition. They show the format only. Never reuse their hook, captions, spoken lines, post text, names, products, store or order numbers. Every video needs its own.
+
+Hooks come in many shapes: a customer's words, a question to the merchant, a plain statement of the problem, a number of tabs or steps the merchant actually sees on screen. Do not open every hook the same way.
 
 ### BeforeAfter
 
