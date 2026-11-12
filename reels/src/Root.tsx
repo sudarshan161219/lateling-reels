@@ -3,8 +3,14 @@ import {Composition} from 'remotion';
 import type {AnyZodObject} from 'remotion';
 import type {z} from 'zod';
 import beforeAfterExample from '../props/examples/before-after.json';
+import featureDemoExample from '../props/examples/feature-demo.json';
+import tipsExample from '../props/examples/tips.json';
+import trustExample from '../props/examples/trust.json';
 import {BeforeAfter} from './compositions/BeforeAfter';
-import {beforeAfterSchema, DURATION_LIMITS, totalSeconds} from './schemas';
+import {FeatureDemo} from './compositions/FeatureDemo';
+import {Tips} from './compositions/Tips';
+import {Trust} from './compositions/Trust';
+import {beforeAfterSchema, DURATION_LIMITS, featureDemoSchema, tipsSchema, totalSeconds, trustSchema} from './schemas';
 import {VIDEO} from './theme';
 
 type Loose = Record<string, unknown>;
@@ -49,5 +55,8 @@ const reel = <S extends z.ZodType>(
 export const Root: React.FC = () => (
   <>
     {reel('BeforeAfter', BeforeAfter, beforeAfterSchema, beforeAfterExample, totalSeconds.BeforeAfter)}
+    {reel('FeatureDemo', FeatureDemo, featureDemoSchema, featureDemoExample, totalSeconds.FeatureDemo)}
+    {reel('Tips', Tips, tipsSchema, tipsExample, totalSeconds.Tips)}
+    {reel('Trust', Trust, trustSchema, trustExample, totalSeconds.Trust)}
   </>
 );

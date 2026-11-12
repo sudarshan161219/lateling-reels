@@ -1,0 +1,96 @@
+{
+  "feature": "needs-attention",
+  "hook": "Which orders are late right now?",
+  "steps": [
+    "Orders that look late or stuck, oldest first.",
+    "Each one has a Possibly late flag.",
+    "Copy a reply before the customer asks."
+  ],
+  "orders": [
+    {
+      "orderNumber": "#1038",
+      "customerName": "Daniel Reyes",
+      "customerEmail": "daniel.reyes@example.com",
+      "orderDate": "Oct 22, 2026",
+      "total": "$84.00",
+      "items": [
+        {
+          "quantity": 1,
+          "name": "Linen Apron"
+        }
+      ],
+      "paymentStatus": "Paid",
+      "fulfillmentStatus": "Unfulfilled",
+      "deliveryStatus": "not_shipped",
+      "timeline": "Ordered 9 days ago",
+      "shippingAddress": "402 Birch Street, Austin, TX 78704",
+      "possiblyLate": true,
+      "customerOrderCount": 1,
+      "customerTotalSpent": "$84.00"
+    },
+    {
+      "orderNumber": "#1042",
+      "customerName": "Maya Okafor",
+      "customerEmail": "maya.okafor@example.com",
+      "orderDate": "Oct 25, 2026",
+      "total": "$59.90",
+      "items": [
+        {
+          "quantity": 2,
+          "name": "Ceramic Mug"
+        },
+        {
+          "quantity": 1,
+          "name": "Tea Sampler"
+        }
+      ],
+      "paymentStatus": "Paid",
+      "fulfillmentStatus": "Fulfilled",
+      "deliveryStatus": "delayed",
+      "timeline": "Shipped 6 days ago",
+      "estimatedDelivery": "Nov 4",
+      "carrier": "UPS",
+      "trackingNumber": "1Z999AA10123456784",
+      "shippingAddress": "18 Alder Lane, Portland, OR 97205",
+      "possiblyLate": true,
+      "customerOrderCount": 2,
+      "customerTotalSpent": "$109.80"
+    },
+    {
+      "orderNumber": "#1047",
+      "customerName": "Hannah Lindqvist",
+      "customerEmail": "hannah.l@example.com",
+      "orderDate": "Oct 27, 2026",
+      "total": "$36.50",
+      "items": [
+        {
+          "quantity": 3,
+          "name": "Beeswax Candle"
+        }
+      ],
+      "paymentStatus": "Paid",
+      "fulfillmentStatus": "Fulfilled",
+      "deliveryStatus": "delayed",
+      "timeline": "Shipped 4 days ago · Was due Oct 30",
+      "carrier": "USPS",
+      "trackingNumber": "9400100000000000000000",
+      "shippingAddress": "7 Harbor Road, Portland, ME 04101",
+      "possiblyLate": true,
+      "customerOrderCount": 4,
+      "customerTotalSpent": "$212.40"
+    }
+  ],
+  "template": {
+    "name": "Where is my order?",
+    "body": "Hi {{first_name}},\n\nThanks for your message. Order {{order_name}} is {{delivery_status}} with {{carrier}}. The new estimated delivery is {{estimated_delivery}}.\n\nTracking: {{tracking_number}}\n\n{{signoff}}",
+    "signOff": "Priya at Fern & Fable"
+  },
+  "seconds": {
+    "hook": 2,
+    "step": 3,
+    "endCard": 3
+  },
+  "audio": {
+    "musicVolume": 0.12
+  }
+}

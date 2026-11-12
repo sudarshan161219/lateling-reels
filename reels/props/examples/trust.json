@@ -1,0 +1,20 @@
+{
+  "hook": "Lateling can read your orders. Nothing else.",
+  "readOnly": {
+    "heading": "Read-only access",
+    "caption": "It cannot refund, cancel or change anything."
+  },
+  "data": {
+    "heading": "Your data stays in your browser",
+    "caption": "Order data goes from Shopify to your browser. It is not stored on our servers."
+  },
+  "seconds": {
+    "hook": 2,
+    "readOnly": 4.5,
+    "data": 4.5,
+    "endCard": 3
+  },
+  "audio": {
+    "musicVolume": 0.12
+  }
+}
