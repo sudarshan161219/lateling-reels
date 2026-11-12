@@ -150,11 +150,12 @@ Daily schedule / Run manually
   -> Fetch prompt           prompts/script-writer.md from this repository
   -> Build Gemini request
   -> Gemini script          returns the props JSON, with the voiceover lines
-  -> Parse props            checks it is JSON, no em dashes, removes "audio"
+  -> Parse props            checks it is JSON, no em dashes, removes "audio", takes out the post text
   -> Start render           workflow_dispatch
   -> Wait for render        3 minutes
   -> Get release            reel-<requestId>; retried every 30 s, up to 20 times
-  -> Reel ready             videoUrl, fileName, hook, composition, feature, props
+  -> Reel ready             videoUrl, fileName, caption, hashtags, postText, postTextShort,
+                            hook, composition, feature, props
 ```
 
 ### Setup
@@ -164,6 +165,15 @@ Daily schedule / Run manually
 3. **Gemini script** node: select your Header Auth credential for Gemini (header name `x-goog-api-key`).
 4. **Start render** and **Get release** nodes: select a Header Auth credential for GitHub. Header name `Authorization`, value `Bearer <token>`. Use a fine-grained personal access token limited to this repository with **Actions: read and write** and **Contents: read**.
 5. Run it once with **Run manually**, then connect your posting nodes after **Reel ready** and activate the workflow.
+
+Gemini also writes the text for the post. **Reel ready** gives it in four forms:
+
+| Field | Content |
+| --- | --- |
+| `caption` | 1 to 3 sentences, at most 200 characters |
+| `hashtags` | a list of 5 to 8 tags, each with its `#` |
+| `postText` | the caption, a blank line, then all hashtags. For Instagram and Facebook |
+| `postTextShort` | the caption with as many hashtags as fit in 280 characters. For X |
 
 If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
 
