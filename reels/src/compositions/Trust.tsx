@@ -82,7 +82,10 @@ const Row: React.FC<{at: number; ok: boolean; label: string; scope?: string}> = 
   );
 };
 
-const ReadOnlyScene: React.FC<{heading: string}> = ({heading}) => (
+/** Rows come in one by one across the first two thirds of the scene. */
+const ReadOnlyScene: React.FC<{heading: string; frames: number}> = ({heading, frames}) => {
+  const at = (share: number) => Math.round(frames * share);
+  return (
   <Stage>
     <Heading text={heading} />
     <div
@@ -98,15 +101,16 @@ const ReadOnlyScene: React.FC<{heading: string}> = ({heading}) => (
         <LockIcon size={34} /> What Lateling can do
       </div>
       {CAN.map((c, i) => (
-        <Row key={c.scope} at={8 + i * 7} ok label={c.label} scope={c.scope} />
+        <Row key={c.scope} at={at(0.08 + i * 0.1)} ok label={c.label} scope={c.scope} />
       ))}
       <div style={{borderTop: `2px solid ${theme.line}`, margin: '10px 0'}} />
       {CANNOT.map((c, i) => (
-        <Row key={c} at={30 + i * 7} ok={false} label={c} />
+        <Row key={c} at={at(0.36 + i * 0.1)} ok={false} label={c} />
       ))}
     </div>
   </Stage>
-);
+  );
+};
 
 const Node: React.FC<{icon: React.ReactNode; label: string; muted?: boolean; at: number}> = ({icon, label, muted, at}) => {
   const p = useEnter(at);
@@ -134,10 +138,11 @@ const Node: React.FC<{icon: React.ReactNode; label: string; muted?: boolean; at:
   );
 };
 
-const DataScene: React.FC<{heading: string}> = ({heading}) => {
+const DataScene: React.FC<{heading: string; frames: number}> = ({heading, frames}) => {
   const frame = useCurrentFrame();
   const flow = useEnter(22);
-  const no = useEnter(40);
+  const serverAt = Math.round(frames * 0.4);
+  const no = useEnter(serverAt + Math.round(frames * 0.12));
   return (
     <Stage>
       <Heading text={heading} />
@@ -168,7 +173,7 @@ const DataScene: React.FC<{heading: string}> = ({heading}) => {
         <Node at={12} icon={<BrowserIcon size={96} strokeWidth={1.6} />} label="Your browser" />
       </div>
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, marginTop: 56}}>
-        <Node at={34} muted icon={<ServerIcon size={96} strokeWidth={1.6} />} label="Our servers" />
+        <Node at={serverAt} muted icon={<ServerIcon size={96} strokeWidth={1.6} />} label="Our servers" />
         <div
           style={{
             display: 'flex',
@@ -205,13 +210,13 @@ export const Trust: React.FC<TrustProps> = (props) => {
         </Series.Sequence>
         <Series.Sequence durationInFrames={f(s.readOnly)}>
           <Scene>
-            <ReadOnlyScene heading={props.readOnly.heading} />
+            <ReadOnlyScene heading={props.readOnly.heading} frames={f(s.readOnly)} />
             <Caption text={props.readOnly.caption} at={10} />
           </Scene>
         </Series.Sequence>
         <Series.Sequence durationInFrames={f(s.data)}>
           <Scene>
-            <DataScene heading={props.data.heading} />
+            <DataScene heading={props.data.heading} frames={f(s.data)} />
             <Caption text={props.data.caption} at={10} />
           </Scene>
         </Series.Sequence>

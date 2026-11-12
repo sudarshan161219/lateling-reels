@@ -76,7 +76,7 @@ export const FindOrderScene: React.FC<Steps & {order: Order; label?: string}> = 
         <FindOrderSearch
           order={order}
           query={order.customerEmail}
-          typeFrom={16}
+          typeFrom={Math.max(16, step - 8 - 70)}
           typeTo={step - 8}
           resultAt={step}
           highlightCustomerAt={step + 10}

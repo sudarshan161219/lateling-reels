@@ -86,9 +86,9 @@
     "signOff": "Priya at Fern & Fable"
   },
   "seconds": {
-    "hook": 2,
-    "step": 3,
-    "endCard": 3
+    "hook": 2.5,
+    "step": 5.5,
+    "endCard": 3.5
   },
   "audio": {
     "musicVolume": 0.12

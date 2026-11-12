@@ -9,10 +9,10 @@
     "caption": "Order data goes from Shopify to your browser. It is not stored on our servers."
   },
   "seconds": {
-    "hook": 2,
-    "readOnly": 4.5,
-    "data": 4.5,
-    "endCard": 3
+    "hook": 2.5,
+    "readOnly": 7.5,
+    "data": 7.5,
+    "endCard": 3.5
   },
   "audio": {
     "musicVolume": 0.12

@@ -2,7 +2,7 @@
 // Renders one composition to out/<name>.mp4.
 //   npm run render -- --comp BeforeAfter --props props/examples/before-after.json [--out out/my-reel.mp4]
 import {spawnSync} from 'node:child_process';
-import {existsSync, mkdirSync, readFileSync} from 'node:fs';
+import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -26,12 +26,27 @@ const propsArg = arg('props');
 if (!comp || !COMPS.includes(comp)) fail(`--comp must be one of ${COMPS.join(', ')}`);
 if (!propsArg) fail('--props <file.json> is required');
 
-const propsPath = path.resolve(process.cwd(), propsArg);
+let propsPath = path.resolve(process.cwd(), propsArg);
 if (!existsSync(propsPath)) fail(`props file not found: ${propsPath}`);
+let props;
 try {
-  JSON.parse(readFileSync(propsPath, 'utf8'));
+  props = JSON.parse(readFileSync(propsPath, 'utf8'));
 } catch (e) {
   fail(`props file is not valid JSON: ${e.message}`);
+}
+
+// Music: if the props name no track, pick one at random from public/music.
+// --no-music turns this off.
+const MUSIC_VOLUME = 0.5;
+const musicDir = path.join(root, 'public', 'music');
+const tracks = existsSync(musicDir) ? readdirSync(musicDir).filter((f) => /\.(mp3|m4a|wav|ogg)$/i.test(f)).sort() : [];
+if (!args.includes('--no-music') && !props.audio?.musicSrc && tracks.length > 0) {
+  const track = tracks[Math.floor(Math.random() * tracks.length)];
+  props.audio = {...props.audio, musicSrc: `music/${track}`, musicVolume: MUSIC_VOLUME};
+  mkdirSync(path.join(root, 'out'), {recursive: true});
+  propsPath = path.join(root, 'out', '.props-with-music.json');
+  writeFileSync(propsPath, JSON.stringify(props));
+  console.log(`render: music ${track}`);
 }
 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);

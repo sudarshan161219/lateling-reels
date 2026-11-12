@@ -61,7 +61,7 @@ export const audioSchema = z
 
 const secs = (min: number, max: number, def: number) => z.number().min(min).max(max).default(def);
 
-// ---- BeforeAfter (15 to 20 s) ----
+// ---- BeforeAfter (20 to 25 s) ----
 
 export const beforeAfterSchema = z.object({
   hook,
@@ -81,17 +81,17 @@ export const beforeAfterSchema = z.object({
   template: templateSchema,
   seconds: z
     .object({
-      hook: secs(1.5, 3, 2),
-      pain: secs(4, 6, 5),
-      find: secs(3.5, 6, 4.5),
-      reply: secs(3.5, 6, 4),
-      endCard: secs(2.5, 4, 3),
+      hook: secs(2, 3, 2.5),
+      pain: secs(5, 7, 6),
+      find: secs(4.5, 7, 5.5),
+      reply: secs(4.5, 7, 5.5),
+      endCard: secs(3, 4, 3.5),
     })
-    .default({hook: 2, pain: 5, find: 4.5, reply: 4, endCard: 3}),
+    .default({hook: 2.5, pain: 6, find: 5.5, reply: 5.5, endCard: 3.5}),
   audio: audioSchema,
 });
 
-// ---- FeatureDemo (10 to 15 s) ----
+// ---- FeatureDemo (20 to 25 s) ----
 
 export const featureSchema = z.enum([
   'needs-attention',
@@ -113,15 +113,15 @@ export const featureDemoSchema = z.object({
   template: templateSchema,
   seconds: z
     .object({
-      hook: secs(1.5, 2.5, 2),
-      step: secs(2, 3.5, 3).describe('Length of each of the three steps.'),
-      endCard: secs(2.5, 3.5, 3),
+      hook: secs(2, 3, 2.5),
+      step: secs(4.5, 6.5, 5.5).describe('Length of each of the three steps.'),
+      endCard: secs(3, 4, 3.5),
     })
-    .default({hook: 2, step: 3, endCard: 3}),
+    .default({hook: 2.5, step: 5.5, endCard: 3.5}),
   audio: audioSchema,
 });
 
-// ---- Tips (20 to 30 s) ----
+// ---- Tips (20 to 25 s) ----
 
 export const tipsSchema = z.object({
   hook,
@@ -135,15 +135,15 @@ export const tipsSchema = z.object({
   seconds: z
     .object({
       hook: secs(2, 3, 2.5),
-      tip: secs(4, 7, 5.5).describe('Length of each of the three tips.'),
+      tip: secs(4, 6, 5).describe('Length of each of the three tips.'),
       lateling: secs(3, 5, 4),
       endCard: secs(2.5, 4, 3),
     })
-    .default({hook: 2.5, tip: 5.5, lateling: 4, endCard: 3}),
+    .default({hook: 2.5, tip: 5, lateling: 4, endCard: 3}),
   audio: audioSchema,
 });
 
-// ---- Trust (10 to 15 s) ----
+// ---- Trust (20 to 25 s) ----
 
 export const trustSchema = z.object({
   hook,
@@ -151,12 +151,12 @@ export const trustSchema = z.object({
   data: z.object({heading: z.string().max(44), caption}),
   seconds: z
     .object({
-      hook: secs(1.5, 3, 2),
-      readOnly: secs(3, 5, 4),
-      data: secs(3, 5, 4),
-      endCard: secs(2.5, 4, 3),
+      hook: secs(2, 3, 2.5),
+      readOnly: secs(6, 9, 7.5),
+      data: secs(6, 9, 7.5),
+      endCard: secs(3, 4, 3.5),
     })
-    .default({hook: 2, readOnly: 4, data: 4, endCard: 3}),
+    .default({hook: 2.5, readOnly: 7.5, data: 7.5, endCard: 3.5}),
   audio: audioSchema,
 });
 
@@ -170,10 +170,10 @@ export type TrustProps = z.infer<typeof trustSchema>;
 
 // Allowed total length per composition, in seconds.
 export const DURATION_LIMITS = {
-  BeforeAfter: [15, 20],
-  FeatureDemo: [10, 15],
-  Tips: [20, 30],
-  Trust: [10, 15],
+  BeforeAfter: [20, 25],
+  FeatureDemo: [20, 25],
+  Tips: [20, 25],
+  Trust: [20, 25],
 } as const;
 
 export const totalSeconds = {

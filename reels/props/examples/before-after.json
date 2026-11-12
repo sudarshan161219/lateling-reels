@@ -5,7 +5,14 @@
     "subject": "Where is my order?",
     "body": "Hi, I ordered over a week ago and nothing has arrived. Can you check?"
   },
-  "painTabs": ["Inbox", "Orders", "Customer", "Order", "Tracking", "Reply"],
+  "painTabs": [
+    "Inbox",
+    "Orders",
+    "Customer",
+    "Order",
+    "Tracking",
+    "Reply"
+  ],
   "painCaption": "Six tabs to answer one email.",
   "findCaption": "Search by email. See the order and where it is.",
   "replyCaption": "The reply fills itself in. You copy it and send.",
@@ -16,8 +23,14 @@
     "orderDate": "Oct 25, 2026",
     "total": "$59.90",
     "items": [
-      {"quantity": 2, "name": "Ceramic Mug"},
-      {"quantity": 1, "name": "Tea Sampler"}
+      {
+        "quantity": 2,
+        "name": "Ceramic Mug"
+      },
+      {
+        "quantity": 1,
+        "name": "Tea Sampler"
+      }
     ],
     "paymentStatus": "Paid",
     "fulfillmentStatus": "Fulfilled",
@@ -36,6 +49,14 @@
     "body": "Hi {{first_name}},\n\nThanks for your message. Order {{order_name}} is {{delivery_status}} with {{carrier}}. The new estimated delivery is {{estimated_delivery}}.\n\nTracking: {{tracking_number}}\n\n{{signoff}}",
     "signOff": "Priya at Fern & Fable"
   },
-  "seconds": {"hook": 2, "pain": 5, "find": 4.5, "reply": 4.5, "endCard": 3},
-  "audio": {"musicVolume": 0.12}
+  "seconds": {
+    "hook": 2.5,
+    "pain": 6,
+    "find": 5.5,
+    "reply": 5.5,
+    "endCard": 3.5
+  },
+  "audio": {
+    "musicVolume": 0.12
+  }
 }

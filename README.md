@@ -11,7 +11,7 @@ reels/                      Remotion project
   src/schemas.ts            zod schema for each composition's props
   props/examples/           one sample props file per composition
   scripts/render.mjs        the render command
-  public/                   put music and voiceover files here
+  public/music/             music tracks; one is picked at random for each render
 prompts/script-writer.md    prompt for Gemini: writes a props JSON
 n8n/                        n8n workflow: Gemini script, render, MP4 address
 .github/workflows/render-reel.yml
@@ -21,10 +21,10 @@ n8n/                        n8n workflow: Gemini script, render, MP4 address
 
 | Id | Length | What it shows |
 | --- | --- | --- |
-| `BeforeAfter` | 15 to 20 s | Hook, six tabs opened by hand, then Lateling finds the order and fills the reply |
-| `FeatureDemo` | 10 to 15 s | One feature in three steps: `needs-attention`, `find-order`, `order-detail`, `reply-template` or `gmail-panel` |
-| `Tips` | 20 to 30 s | Three tips as text on screen. Lateling appears only in the last scene |
-| `Trust` | 10 to 15 s | Read-only access, and order data that stays in the browser |
+| `BeforeAfter` | 20 to 25 s | Hook, six tabs opened by hand, then Lateling finds the order and fills the reply |
+| `FeatureDemo` | 20 to 25 s | One feature in three steps: `needs-attention`, `find-order`, `order-detail`, `reply-template` or `gmail-panel` |
+| `Tips` | 20 to 25 s | Three tips as text on screen. Lateling appears only in the last scene |
+| `Trust` | 20 to 25 s | Read-only access, and order data that stays in the browser |
 
 Every composition ends with the same end card: Lateling, "Free plan on the Shopify App Store", and the landing page address.
 
@@ -58,7 +58,7 @@ npm run render -- --comp BeforeAfter --props props/examples/before-after.json
 
 The MP4 is written to `reels/out/`. Add `--out out/my-name.mp4` to choose the file name. `--comp` is one of `BeforeAfter`, `FeatureDemo`, `Tips`, `Trust`.
 
-A 19 second video takes about a minute on a 4-core laptop.
+A 23 second video takes about a minute and a half on a 4-core laptop.
 
 To check a single frame without rendering the whole video:
 
@@ -70,17 +70,19 @@ npx remotion still src/index.ts BeforeAfter out/frame.png --frame=200 --props=pr
 
 - Captions are part of the picture, so they show when the video is muted.
 - Nothing important is drawn in the top 240 px, the bottom 430 px, or under the button column on the right, where Instagram and YouTube put their own interface. The values are in `reels/src/theme.ts` (`SAFE`).
-- Music and voiceover are optional. Put a royalty-free track in `reels/public/` and name it in the props file. An `https://` URL also works.
+- Music: put one or more tracks (`.mp3`, `.m4a`, `.wav`, `.ogg`) in `reels/public/music/` and push. Every render, local or in the Action, then picks one at random and plays it at half volume. With no tracks in the folder the video is silent. Add `--no-music` to the render command for a silent video.
+- Use only tracks whose licence lets you use them in adverts and keep the file in a public repository. Chart songs and sounds from Instagram's own library do not qualify: a video with one burned in gets muted or taken down.
+- To choose the track or add a voiceover for one video, name the files in the props file. They are looked up in `reels/public/`. An `https://` URL also works.
 
 ```json
 "audio": {
-  "musicSrc": "calm-track.mp3",
-  "musicVolume": 0.12,
+  "musicSrc": "music/calm-track.mp3",
+  "musicVolume": 0.3,
   "voiceoverSrc": "voiceover.mp3"
 }
 ```
 
-The music loops, fades in and out, and is turned down when a voiceover is present. Leave both out for a silent video. No music file is included in this repo.
+The music loops, fades in and out, and is turned down when a voiceover is present. No music file is included in this repo.
 
 ## Template variables
 
