@@ -93,6 +93,21 @@ jobs:
             --notes "Rendered by workflow run $GITHUB_RUN_ID."
           echo "url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$TAG/$FILE" >> "$GITHUB_OUTPUT"
 
+      # Keeps the Releases page short. Only touches releases this workflow made (tag reel-*).
+      - name: Delete old reels
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP_DAYS: ${{ vars.REEL_KEEP_DAYS || '14' }}
+        run: |
+          cutoff="$(date -u -d "$KEEP_DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)"
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 300 --json tagName,publishedAt \
+            --jq ".[] | select(.tagName | startswith(\"reel-\")) | select(.publishedAt < \"$cutoff\") | .tagName" |
+          while read -r tag; do
+            gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+            echo "Deleted $tag"
+          done
+
       - name: Job summary
         env:
           URL: ${{ steps.release.outputs.url }}

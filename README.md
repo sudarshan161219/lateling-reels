@@ -129,6 +129,7 @@ The job installs dependencies, renders the video, and then:
 - uploads the MP4 as a workflow artifact,
 - creates a GitHub Release tagged `reel-<id>` with the MP4 attached,
 - writes the MP4 address in the job summary.
+- deletes reel releases older than 14 days, with their tags, so the Releases page stays short. To keep them for a different time, add a repository variable `REEL_KEEP_DAYS` under **Settings → Secrets and variables → Actions → Variables**. Only releases tagged `reel-*` are touched.
 
 The address has this form:
 
@@ -208,7 +209,7 @@ GET https://api.github.com/repos/OWNER/REPO/releases/tags/reel-20261112-093000
 
 In the `200` response, `assets[0].browser_download_url` is the public address. If the repository is ever made private, download `assets[0].url` with the token and the header `Accept: application/octet-stream` instead.
 
-Releases pile up over time. Delete old ones from the repository's Releases page.
+The Action deletes reel releases older than 14 days, so a `videoUrl` stops working after that. Post or download a reel before then.
 
 ## Changing things
 
