@@ -67,6 +67,9 @@ jobs:
           echo "file=lateling-$slug-$id.mp4" >> "$GITHUB_OUTPUT"
 
       - name: Render
+        env:
+          # Optional. Used for the AI voiceover. Without it the video has no voice.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run render -- --comp "$COMPOSITION" --props out/props.json --out "out/${{ steps.name.outputs.file }}"
 
       - name: Upload workflow artifact

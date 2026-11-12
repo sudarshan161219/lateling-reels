@@ -11,6 +11,7 @@ reels/                      Remotion project
   src/schemas.ts            zod schema for each composition's props
   props/examples/           one sample props file per composition
   scripts/render.mjs        the render command
+  scripts/voice.mjs         AI voiceover (Gemini text-to-speech)
   public/music/             music tracks; one is picked at random for each render
 prompts/script-writer.md    prompt for Gemini: writes a props JSON
 n8n/                        n8n workflow: Gemini script, render, MP4 address
@@ -72,7 +73,7 @@ npx remotion still src/index.ts BeforeAfter out/frame.png --frame=200 --props=pr
 - Nothing important is drawn in the top 240 px, the bottom 430 px, or under the button column on the right, where Instagram and YouTube put their own interface. The values are in `reels/src/theme.ts` (`SAFE`).
 - Music: put one or more tracks (`.mp3`, `.m4a`, `.wav`, `.ogg`) in `reels/public/music/` and push. Every render, local or in the Action, then picks one at random and plays it at half volume. With no tracks in the folder the video is silent. Add `--no-music` to the render command for a silent video.
 - Use only tracks whose licence lets you use them in adverts and keep the file in a public repository. Chart songs and sounds from Instagram's own library do not qualify: a video with one burned in gets muted or taken down.
-- To choose the track or add a voiceover for one video, name the files in the props file. They are looked up in `reels/public/`. An `https://` URL also works.
+- To choose the track or use your own recorded voiceover for one video, name the files in the props file. They are looked up in `reels/public/`. An `https://` URL also works.
 
 ```json
 "audio": {
@@ -83,6 +84,27 @@ npx remotion still src/index.ts BeforeAfter out/frame.png --frame=200 --props=pr
 ```
 
 The music loops, fades in and out, and is turned down when a voiceover is present. No music file is included in this repo.
+
+## AI voiceover
+
+A props file can carry `voiceover`: one spoken line per scene, without the end card. The render sends each line to Gemini text-to-speech, puts the lines on one track so each starts with its scene, and makes a scene longer if its line needs more time. The end card line is fixed in `reels/scripts/voice.mjs`. Music is turned down while a voiceover is present.
+
+```json
+"voiceover": [
+  "Lateling can read your orders. Nothing else.",
+  "It has read-only access. It cannot refund, cancel or change anything.",
+  "Order data goes from Shopify to your browser. It is not stored on our servers."
+]
+```
+
+The voice needs a Gemini API key in the environment variable `GEMINI_API_KEY`.
+
+- In the Action: add a repository secret named `GEMINI_API_KEY` under **Settings → Secrets and variables → Actions**.
+- Locally: set the variable in your shell before `npm run render`.
+
+Without the key, or if the speech request fails, the video is rendered without a voice and the log says why. `--no-voice` skips the voice on purpose.
+
+The voice is `Sulafat` on the model `gemini-3.8-flash-tts`. Set `TTS_VOICE`, `TTS_MODEL` or `TTS_STYLE` in the environment to change them. `TTS_MOCK=1` replaces the speech with a tone of about the same length, to check timing without a key.
 
 ## Template variables
 
@@ -127,7 +149,7 @@ Daily schedule / Run manually
   -> Config                 composition for today, request id
   -> Fetch prompt           prompts/script-writer.md from this repository
   -> Build Gemini request
-  -> Gemini script          returns the props JSON
+  -> Gemini script          returns the props JSON, with the voiceover lines
   -> Parse props            checks it is JSON, no em dashes, removes "audio"
   -> Start render           workflow_dispatch
   -> Wait for render        3 minutes

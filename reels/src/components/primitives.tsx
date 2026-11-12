@@ -362,7 +362,7 @@ const resolveSrc = (src: string) => (/^https?:\/\//.test(src) ? src : staticFile
 /** Optional music bed (looped, faded out at the end) and optional voiceover. */
 export const AudioLayer: React.FC<{audio: AudioProps}> = ({audio}) => {
   const {durationInFrames, fps} = useVideoConfig();
-  const base = audio.voiceoverSrc ? audio.musicVolume * 0.6 : audio.musicVolume;
+  const base = audio.voiceoverSrc ? audio.musicVolume * 0.3 : audio.musicVolume;
   return (
     <>
       {audio.musicSrc ? (

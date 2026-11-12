@@ -59,6 +59,17 @@ export const audioSchema = z
   })
   .default({musicVolume: 0.12});
 
+/**
+ * Optional AI voiceover: one spoken line per scene, in scene order, without the end card.
+ * The end card line is fixed in scripts/voice.mjs.
+ */
+const voiceover = (lines: number, scenes: string) =>
+  z
+    .array(z.string().min(3).max(90))
+    .length(lines)
+    .optional()
+    .describe(`Spoken lines, one per scene: ${scenes}. Max 90 characters each. Leave out for no voice.`);
+
 const secs = (min: number, max: number, def: number) => z.number().min(min).max(max).default(def);
 
 // ---- BeforeAfter (20 to 25 s) ----
@@ -88,6 +99,7 @@ export const beforeAfterSchema = z.object({
       endCard: secs(3, 4, 3.5),
     })
     .default({hook: 2.5, pain: 6, find: 5.5, reply: 5.5, endCard: 3.5}),
+  voiceover: voiceover(4, 'hook, the manual way, find the order, the reply'),
   audio: audioSchema,
 });
 
@@ -118,6 +130,7 @@ export const featureDemoSchema = z.object({
       endCard: secs(3, 4, 3.5),
     })
     .default({hook: 2.5, step: 5.5, endCard: 3.5}),
+  voiceover: voiceover(4, 'hook, step 1, step 2, step 3'),
   audio: audioSchema,
 });
 
@@ -140,6 +153,7 @@ export const tipsSchema = z.object({
       endCard: secs(2.5, 4, 3),
     })
     .default({hook: 2.5, tip: 5, lateling: 4, endCard: 3}),
+  voiceover: voiceover(5, 'hook, tip 1, tip 2, tip 3, the Lateling scene'),
   audio: audioSchema,
 });
 
@@ -157,6 +171,7 @@ export const trustSchema = z.object({
       endCard: secs(3, 4, 3.5),
     })
     .default({hook: 2.5, readOnly: 7.5, data: 7.5, endCard: 3.5}),
+  voiceover: voiceover(3, 'hook, read-only access, where the data goes'),
   audio: audioSchema,
 });
 
@@ -188,3 +203,11 @@ export const totalSeconds = {
     return s.hook + s.readOnly + s.data + s.endCard;
   },
 };
+
+// Scenes in play order, named by their key in "seconds". Used to time the voiceover.
+export const SCENES = {
+  BeforeAfter: ['hook', 'pain', 'find', 'reply', 'endCard'],
+  FeatureDemo: ['hook', 'step', 'step', 'step', 'endCard'],
+  Tips: ['hook', 'tip', 'tip', 'tip', 'lateling', 'endCard'],
+  Trust: ['hook', 'readOnly', 'data', 'endCard'],
+} as const;

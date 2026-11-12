@@ -5,6 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {addVoiceover} from './voice.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const COMPS = ['BeforeAfter', 'FeatureDemo', 'Tips', 'Trust'];
@@ -43,11 +44,22 @@ const tracks = existsSync(musicDir) ? readdirSync(musicDir).filter((f) => /\.(mp
 if (!args.includes('--no-music') && !props.audio?.musicSrc && tracks.length > 0) {
   const track = tracks[Math.floor(Math.random() * tracks.length)];
   props.audio = {...props.audio, musicSrc: `music/${track}`, musicVolume: MUSIC_VOLUME};
-  mkdirSync(path.join(root, 'out'), {recursive: true});
-  propsPath = path.join(root, 'out', '.props-with-music.json');
-  writeFileSync(propsPath, JSON.stringify(props));
   console.log(`render: music ${track}`);
 }
+
+// Voiceover: if the props have "voiceover" lines, speak them. --no-voice turns this off.
+// A video without a voice is better than no video, so a failure here does not stop the render.
+if (!args.includes('--no-voice')) {
+  try {
+    props = await addVoiceover({root, comp, props});
+  } catch (e) {
+    console.warn(`render: no voiceover: ${e.message}`);
+  }
+}
+
+mkdirSync(path.join(root, 'out'), {recursive: true});
+propsPath = path.join(root, 'out', '.props-final.json');
+writeFileSync(propsPath, JSON.stringify(props));
 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
 const out = path.resolve(process.cwd(), arg('out') ?? path.join(root, 'out', `${comp}-${stamp}.mp4`));

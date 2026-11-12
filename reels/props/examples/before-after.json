@@ -56,6 +56,12 @@
     "reply": 5.5,
     "endCard": 3.5
   },
+  "voiceover": [
+    "A customer asks where their order is.",
+    "So you open six tabs to answer one email.",
+    "With Lateling, you search by email and see the order.",
+    "The reply fills itself in. You copy it and send."
+  ],
   "audio": {
     "musicVolume": 0.12
   }

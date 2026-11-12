@@ -90,6 +90,12 @@
     "step": 5.5,
     "endCard": 3.5
   },
+  "voiceover": [
+    "Which of your orders are late right now?",
+    "Lateling lists orders that look late or stuck, oldest first.",
+    "Each one has a Possibly late flag.",
+    "Copy a reply before the customer asks."
+  ],
   "audio": {
     "musicVolume": 0.12
   }

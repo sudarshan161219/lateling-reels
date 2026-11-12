@@ -14,6 +14,11 @@
     "data": 7.5,
     "endCard": 3.5
   },
+  "voiceover": [
+    "Lateling can read your orders. Nothing else.",
+    "It has read-only access. It cannot refund, cancel or change anything.",
+    "Order data goes from Shopify to your browser. It is not stored on our servers."
+  ],
   "audio": {
     "musicVolume": 0.12
   }
