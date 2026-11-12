@@ -13,6 +13,7 @@ reels/                      Remotion project
   scripts/render.mjs        the render command
   public/                   put music and voiceover files here
 prompts/script-writer.md    prompt for Gemini: writes a props JSON
+n8n/                        n8n workflow: Gemini script, render, MP4 address
 .github/workflows/render-reel.yml
 ```
 
@@ -115,15 +116,40 @@ It is public only if the repository is public. In a private repository the asset
 
 Each `request_id` can be used once, because a release tag must be unique.
 
-## Calling the Action from n8n
+## n8n workflow
 
-Create a fine-grained personal access token for this repository with **Actions: read and write** and **Contents: read**. Send it on every request as `Authorization: Bearer <token>`, together with `Accept: application/vnd.github+json`.
+`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, and ends with the MP4 address. It does not post anything. Connect your posting nodes to its last node.
 
-**1. Get the props from Gemini.** Send the contents of `prompts/script-writer.md` as the system instruction and the composition name (plus an optional topic) as the message. Ask for a JSON response (`responseMimeType: application/json`). Parse the reply to make sure it is valid JSON.
+```
+Daily schedule / Run manually
+  -> Config                 composition for today, request id
+  -> Fetch prompt           prompts/script-writer.md from this repository
+  -> Build Gemini request
+  -> Gemini script          returns the props JSON
+  -> Parse props            checks it is JSON, no em dashes, removes "audio"
+  -> Start render           workflow_dispatch
+  -> Wait for render        3 minutes
+  -> Get release            reel-<requestId>; retried every 30 s, up to 20 times
+  -> Reel ready             videoUrl, fileName, hook, composition, feature, props
+```
 
-**2. Make a request id** in n8n, for example `{{ $now.toFormat('yyyyLLdd-HHmmss') }}`. Letters, digits, dots, dashes and underscores only.
+### Setup
 
-**3. Start the workflow.** HTTP Request node:
+1. In n8n choose **Import from File** and pick the JSON file.
+2. Open the **Config** node. Check `OWNER`, `REPO`, the Gemini model, and the weekday rotation. `FORCE_COMPOSITION` and `TOPIC` are there for one-off runs.
+3. **Gemini script** node: select your Header Auth credential for Gemini (header name `x-goog-api-key`).
+4. **Start render** and **Get release** nodes: select a Header Auth credential for GitHub. Header name `Authorization`, value `Bearer <token>`. Use a fine-grained personal access token limited to this repository with **Actions: read and write** and **Contents: read**.
+5. Run it once with **Run manually**, then connect your posting nodes after **Reel ready** and activate the workflow.
+
+If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
+
+**Fetch prompt** reads the prompt from the `main` branch on GitHub, so a prompt change takes effect once it is pushed.
+
+### The two GitHub calls
+
+For reference, or to build the calls yourself. Both need `Authorization: Bearer <token>` and `Accept: application/vnd.github+json`.
+
+Start a render. `props` must be a string, not an object. GitHub answers `204 No Content` and does not wait for the render.
 
 ```
 POST https://api.github.com/repos/OWNER/REPO/actions/workflows/render-reel.yml/dispatches
@@ -140,24 +166,15 @@ POST https://api.github.com/repos/OWNER/REPO/actions/workflows/render-reel.yml/d
 }
 ```
 
-`props` must be a string, not an object. In n8n use `{{ JSON.stringify($json.props) }}`. GitHub answers `204 No Content` and does not wait for the render.
-
-**4. Wait for the release.** Wait about 3 minutes, then poll with an HTTP Request node:
+Find the video. This returns `404` until the render has finished.
 
 ```
 GET https://api.github.com/repos/OWNER/REPO/releases/tags/reel-20261112-093000
 ```
 
-It returns `404` until the render has finished. Retry every 30 seconds, and give up after about 10 minutes. If it never appears, the run failed. The reason, usually a props file that did not match the schema, is in the run's log under the repository's Actions tab.
+In the `200` response, `assets[0].browser_download_url` is the public address. If the repository is ever made private, download `assets[0].url` with the token and the header `Accept: application/octet-stream` instead.
 
-**5. Read the video address.** In the `200` response:
-
-- `assets[0].browser_download_url` is the public address (public repositories).
-- For a private repository, download `assets[0].url` with the same token and the header `Accept: application/octet-stream`, then pass the file on as binary data.
-
-Pass that address or file to your posting workflow.
-
-Releases pile up over time. Delete old ones from the repository's Releases page, or with `gh release delete reel-<id> --cleanup-tag`.
+Releases pile up over time. Delete old ones from the repository's Releases page.
 
 ## Changing things
 

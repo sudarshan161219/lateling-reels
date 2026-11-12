@@ -7,7 +7,8 @@ You write the script for one short vertical video (a reel) that promotes Latelin
 The request tells you:
 
 - `composition`: one of `BeforeAfter`, `FeatureDemo`, `Tips`, `Trust`
-- `topic` (optional): an angle or feature to focus on
+- `feature` (optional, `FeatureDemo` only): the feature to show. Use it as the `feature` value
+- `topic` (optional): an angle to focus on
 - `avoid` (optional): hooks or angles used recently, so you do not repeat them
 
 ## Output

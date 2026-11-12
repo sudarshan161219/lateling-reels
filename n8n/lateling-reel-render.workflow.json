@@ -1,0 +1,502 @@
+{
+  "name": "Lateling reel render",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "daily-schedule",
+      "name": "Daily schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        -100
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "run-manually",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ---- Settings: edit these ----\nconst OWNER = 'sudarshan161219';\nconst REPO = 'lateling-reels';\nconst REF = 'main';\nconst GEMINI_MODEL = 'gemini-2.5-flash';\n\n// One composition per weekday, Sunday first. Set FORCE_COMPOSITION to always use the same one.\nconst ROTATION = ['Tips', 'BeforeAfter', 'FeatureDemo', 'Trust', 'FeatureDemo', 'BeforeAfter', 'FeatureDemo'];\nconst FORCE_COMPOSITION = ''; // 'BeforeAfter' | 'FeatureDemo' | 'Tips' | 'Trust' | ''\n\n// For FeatureDemo, the feature changes with the week of the year.\nconst FEATURES = ['needs-attention', 'find-order', 'order-detail', 'reply-template', 'gmail-panel'];\n\n// Optional angle for the script, for example 'guest checkouts'. Leave empty to let the model choose.\nconst TOPIC = '';\n// ---- End of settings ----\n\nconst now = new Date();\nconst composition = FORCE_COMPOSITION || ROTATION[now.getDay()];\nconst week = Math.floor((now - new Date(now.getFullYear(), 0, 1)) / (7 * 24 * 3600 * 1000));\nconst feature = composition === 'FeatureDemo' ? FEATURES[(week + now.getDay()) % FEATURES.length] : '';\n\n// Used as the release tag: reel-<requestId>. Must be unique for every run.\nconst pad = (n) => String(n).padStart(2, '0');\nconst requestId =\n  `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-` +\n  `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;\n\nreturn [{json: {owner: OWNER, repo: REPO, ref: REF, model: GEMINI_MODEL, composition, feature, topic: TOPIC, requestId}}];\n"
+      },
+      "id": "config",
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://raw.githubusercontent.com/{{ $json.owner }}/{{ $json.repo }}/{{ $json.ref }}/prompts/script-writer.md",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "fetch-prompt",
+      "name": "Fetch prompt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds the Gemini request: the prompt file from the repo is the system instruction.\nconst cfg = $('Config').first().json;\nconst prompt = $json.data;\nif (typeof prompt !== 'string' || prompt.length < 1000) {\n  throw new Error('Could not load prompts/script-writer.md from the repository.');\n}\n\nconst lines = [`composition: ${cfg.composition}`];\nif (cfg.feature) lines.push(`feature: ${cfg.feature}`);\nif (cfg.topic) lines.push(`topic: ${cfg.topic}`);\nlines.push(`today: ${new Date().toISOString().slice(0, 10)}`);\n\nreturn [{json: {payload: {\n  system_instruction: {parts: [{text: prompt}]},\n  contents: [{role: 'user', parts: [{text: lines.join('\\n')}]}],\n  generationConfig: {responseMimeType: 'application/json', temperature: 0.9},\n}}}];\n"
+      },
+      "id": "build-gemini-request",
+      "name": "Build Gemini request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $('Config').first().json.model }}:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "gemini-script",
+      "name": "Gemini script",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Header Auth account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Reads the props JSON out of Gemini's answer and does a few cheap checks.\n// The full schema check happens in the render itself.\nconst cfg = $('Config').first().json;\nconst parts = $json.candidates?.[0]?.content?.parts ?? [];\nlet text = parts.map((p) => p.text ?? '').join('').trim();\nif (!text) throw new Error('Gemini returned no text. Finish reason: ' + ($json.candidates?.[0]?.finishReason ?? 'unknown'));\ntext = text.replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/, '');\n\nlet props;\ntry {\n  props = JSON.parse(text);\n} catch (e) {\n  throw new Error('Gemini did not return valid JSON: ' + e.message);\n}\nif (!props || typeof props !== 'object' || Array.isArray(props)) throw new Error('Props must be a JSON object.');\nif (typeof props.hook !== 'string') throw new Error('Props have no \"hook\".');\n\n// House style: no em or en dashes anywhere in the on-screen text.\nconst dashes = JSON.stringify(props).match(/[–—]/g);\nif (dashes) throw new Error('Script contains em or en dashes. Run again.');\n\n// Keep the requested feature, and never let the model choose audio files.\nif (cfg.composition === 'FeatureDemo' && cfg.feature) props.feature = cfg.feature;\ndelete props.audio;\n\nconst propsString = JSON.stringify(props);\nif (propsString.length > 60000) throw new Error('Props are too long for a workflow input.');\n\nreturn [{json: {composition: cfg.composition, requestId: cfg.requestId, hook: props.hook, props, propsString}}];\n"
+      },
+      "id": "parse-props",
+      "name": "Parse props",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $('Config').first().json.owner }}/{{ $('Config').first().json.repo }}/actions/workflows/render-reel.yml/dispatches",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ ref: $('Config').first().json.ref, inputs: { composition: $json.composition, props: $json.propsString, request_id: $json.requestId } }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "start-render",
+      "name": "Start render",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "GitHub token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "id": "wait-for-render",
+      "name": "Wait for render",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        0
+      ],
+      "webhookId": "caa9e3ac-3148-448c-9e16-8ca1ee64b73c"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $('Config').first().json.owner }}/{{ $('Config').first().json.repo }}/releases/tags/reel-{{ $('Parse props').first().json.requestId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "get-release",
+      "name": "Get release",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "GitHub token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.statusCode }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "rightValue": 200
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "rendered",
+      "name": "Rendered?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Output of the workflow. Connect your posting nodes after this one.\nconst job = $('Parse props').first().json;\nconst cfg = $('Config').first().json;\nconst release = $json.body;\nconst asset = (release.assets ?? []).find((a) => a.name.endsWith('.mp4'));\nif (!asset) throw new Error('The release exists but has no MP4 attached.');\n\nreturn [{json: {\n  videoUrl: asset.browser_download_url,\n  fileName: asset.name,\n  sizeBytes: asset.size,\n  composition: job.composition,\n  feature: cfg.feature,\n  hook: job.hook,\n  requestId: job.requestId,\n  releaseTag: release.tag_name,\n  releasePage: release.html_url,\n  props: job.props,\n}}];\n"
+      },
+      "id": "reel-ready",
+      "name": "Reel ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $runIndex }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "rightValue": 20
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "keep-waiting",
+      "name": "Keep waiting?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "wait-30s",
+      "name": "Wait 30 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        320
+      ],
+      "webhookId": "e25214cf-d719-4335-ad82-22967fe57a5d"
+    },
+    {
+      "parameters": {
+        "errorMessage": "=No release reel-{{ $('Parse props').first().json.requestId }} after waiting. Check the Actions tab of the repository for the failed run."
+      },
+      "id": "render-failed",
+      "name": "Render failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lateling reel render\n\nWrites a script with Gemini, renders it with the GitHub Action in **lateling-reels**, and ends with the public MP4 address in `videoUrl`.\n\n**Before the first run**\n\n1. **Config** node: check owner, repo and the weekday rotation.\n2. **Gemini script** node: pick your Header Auth credential for Gemini (header `x-goog-api-key`).\n3. **Start render** and **Get release** nodes: pick a Header Auth credential for GitHub. Header name `Authorization`, value `Bearer <token>`. Use a fine-grained token for this one repository with Actions: read and write, Contents: read.\n4. Connect your posting nodes after **Reel ready**. It outputs `videoUrl`, `hook`, `composition` and the full `props`.\n\n**How it waits**\n\nA render takes a few minutes. The workflow waits 3 minutes, then checks for the release tagged `reel-<requestId>` every 30 seconds, up to 20 times. If the release never appears, the run stops with an error. The reason is in the repository's Actions tab, usually props that did not match the schema.",
+        "height": 460,
+        "width": 640
+      },
+      "id": "note",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -620
+      ]
+    }
+  ],
+  "connections": {
+    "Daily schedule": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Fetch prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch prompt": {
+      "main": [
+        [
+          {
+            "node": "Build Gemini request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Gemini request": {
+      "main": [
+        [
+          {
+            "node": "Gemini script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini script": {
+      "main": [
+        [
+          {
+            "node": "Parse props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse props": {
+      "main": [
+        [
+          {
+            "node": "Start render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start render": {
+      "main": [
+        [
+          {
+            "node": "Wait for render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for render": {
+      "main": [
+        [
+          {
+            "node": "Get release",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get release": {
+      "main": [
+        [
+          {
+            "node": "Rendered?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rendered?": {
+      "main": [
+        [
+          {
+            "node": "Reel ready",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Keep waiting?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep waiting?": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Render failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 seconds": {
+      "main": [
+        [
+          {
+            "node": "Get release",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
