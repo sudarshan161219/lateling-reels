@@ -83,7 +83,7 @@ npx remotion still src/index.ts BeforeAfter out/frame.png --frame=200 --props=pr
 }
 ```
 
-The music loops, fades in and out, and is turned down when a voiceover is present. No music file is included in this repo.
+The music loops, fades in and out, and is turned down when a voiceover is present. The repo includes five CC0 tracks. Their sources are listed in `reels/public/music/SOURCES.md`.
 
 ## AI voiceover
 
