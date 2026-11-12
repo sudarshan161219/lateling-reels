@@ -5,7 +5,8 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "node scripts/render.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "schemas": "node scripts/print-schemas.mjs"
   },
   "license": "UNLICENSED",
   "type": "commonjs",

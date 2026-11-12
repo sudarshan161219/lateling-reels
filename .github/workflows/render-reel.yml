@@ -1,0 +1,104 @@
+name: Render reel
+
+on:
+  workflow_dispatch:
+    inputs:
+      composition:
+        description: Which composition to render
+        required: true
+        type: choice
+        options:
+          - BeforeAfter
+          - FeatureDemo
+          - Tips
+          - Trust
+      props:
+        description: Props for the composition, as a JSON string
+        required: true
+        type: string
+      request_id:
+        description: Optional id chosen by the caller. The release is tagged reel-<request_id> so the caller can find it.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-reel-${{ inputs.request_id || github.run_id }}
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: reels
+    env:
+      # Inputs are passed through the environment, never pasted into a script.
+      COMPOSITION: ${{ inputs.composition }}
+      PROPS_JSON: ${{ inputs.props }}
+      REQUEST_ID: ${{ inputs.request_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: reels/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write props file
+        run: |
+          mkdir -p out
+          printf '%s' "$PROPS_JSON" > out/props.json
+          node -e "JSON.parse(require('fs').readFileSync('out/props.json','utf8'))"
+
+      - name: Name the output
+        id: name
+        run: |
+          id="${REQUEST_ID:-$GITHUB_RUN_ID}"
+          id="$(printf '%s' "$id" | tr -c 'A-Za-z0-9._-' '-' | cut -c1-60)"
+          slug="$(printf '%s' "$COMPOSITION" | tr 'A-Z' 'a-z')"
+          echo "tag=reel-$id" >> "$GITHUB_OUTPUT"
+          echo "file=lateling-$slug-$id.mp4" >> "$GITHUB_OUTPUT"
+
+      - name: Render
+        run: npm run render -- --comp "$COMPOSITION" --props out/props.json --out "out/${{ steps.name.outputs.file }}"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.name.outputs.file }}
+          path: reels/out/${{ steps.name.outputs.file }}
+          if-no-files-found: error
+
+      - name: Publish release asset
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.name.outputs.tag }}
+          FILE: ${{ steps.name.outputs.file }}
+        run: |
+          gh release create "$TAG" "out/$FILE" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$COMPOSITION reel ($TAG)" \
+            --notes "Rendered by workflow run $GITHUB_RUN_ID."
+          echo "url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$TAG/$FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Job summary
+        env:
+          URL: ${{ steps.release.outputs.url }}
+          TAG: ${{ steps.name.outputs.tag }}
+        run: |
+          {
+            echo "## Reel rendered"
+            echo ""
+            echo "- Composition: \`$COMPOSITION\`"
+            echo "- Release tag: \`$TAG\`"
+            echo "- MP4: $URL"
+          } >> "$GITHUB_STEP_SUMMARY"
