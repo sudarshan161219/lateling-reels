@@ -143,7 +143,7 @@ Daily schedule / Run manually
 
 If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
 
-**Fetch prompt** reads the prompt from the `main` branch on GitHub, so a prompt change takes effect once it is pushed.
+**Fetch prompt** reads the prompt from the `main` branch through the GitHub API (`api.github.com`), so a prompt change takes effect once it is pushed. It needs no token while the repository is public.
 
 ### The two GitHub calls
 
