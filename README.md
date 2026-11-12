@@ -143,10 +143,10 @@ Each `request_id` can be used once, because a release tag must be unique.
 
 ## n8n workflow
 
-`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then posts the MP4 to YouTube and Instagram. Scheduled runs are on Tuesday and Friday at 09:00.
+`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then posts the MP4 to YouTube and Instagram. The scheduled run is on Tuesday at 09:00.
 
 ```
-Twice a week / Run manually
+Once a week / Run manually
   -> Config                 composition for this run, an angle, a store type, request id
   -> Fetch prompt           prompts/script-writer.md from this repository
   -> Recent reels           hooks of the last reels, so they are not repeated
@@ -197,7 +197,7 @@ If the render fails, the workflow stops at **Render failed** after about 13 minu
 
 Scheduled runs post every reel. Runs started by hand post only when `POST_ON_MANUAL` is `true` in the **Config** node.
 
-**Schedule.** The **Twice a week** node holds the cron expression `0 9 * * 2,5`: Tuesday and Friday at 09:00, about 8 reels a month. For one a week, about 4 a month, change it to `0 9 * * 2`. The workflow's time zone is set to `Asia/Kolkata` under its settings. n8n must be running at that time and the workflow must be active. A run that is missed because the computer was off is not made up later.
+**Schedule.** The **Once a week** node holds the cron expression `0 9 * * 2`: Tuesday at 09:00, about 4 reels a month. For two a week, change it to `0 9 * * 2,5`, which adds Friday. The workflow's time zone is set to `Asia/Kolkata` under its settings. n8n must be running at that time and the workflow must be active. A run that is missed because the computer was off is not made up later.
 
 **YouTube.**
 
