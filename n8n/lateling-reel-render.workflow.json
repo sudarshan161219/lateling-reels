@@ -54,7 +54,7 @@
               "responseFormat": "text"
             }
           },
-          "timeout": 30000
+          "timeout": 15000
         },
         "sendHeaders": true,
         "headerParameters": {
@@ -79,8 +79,8 @@
         0
       ],
       "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 3000
+      "maxTries": 4,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -220,7 +220,7 @@
               "neverError": true
             }
           },
-          "timeout": 30000
+          "timeout": 15000
         }
       },
       "id": "get-release",
@@ -236,7 +236,10 @@
           "id": "",
           "name": "GitHub token"
         }
-      }
+      },
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
