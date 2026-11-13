@@ -141,6 +141,16 @@ It is public only if the repository is public. In a private repository the asset
 
 Each `request_id` can be used once, because a release tag must be unique.
 
+## YouTube channel art
+
+`ChannelBanner` (2560 x 1440) and `ChannelAvatar` (800 x 800) are stills in the same colours and mark as the end card. The banner keeps its text inside the 1546 x 423 area that phones show. The order cards on the sides only show on desktop and TV.
+
+```
+cd reels
+npx remotion still src/index.ts ChannelBanner out/channel-banner.png
+npx remotion still src/index.ts ChannelAvatar out/channel-avatar.png
+```
+
 ## n8n workflow
 
 `n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then uploads the MP4 to YouTube as a Short. Instagram is posted by hand from the **Posted** node's output. The scheduled run is on Tuesday at 09:00.

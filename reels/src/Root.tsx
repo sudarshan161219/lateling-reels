@@ -1,5 +1,5 @@
 import React from 'react';
-import {Composition} from 'remotion';
+import {Composition, Still} from 'remotion';
 import type {AnyZodObject} from 'remotion';
 import type {z} from 'zod';
 import beforeAfterExample from '../props/examples/before-after.json';
@@ -7,6 +7,7 @@ import featureDemoExample from '../props/examples/feature-demo.json';
 import tipsExample from '../props/examples/tips.json';
 import trustExample from '../props/examples/trust.json';
 import {BeforeAfter} from './compositions/BeforeAfter';
+import {AVATAR, BANNER, ChannelAvatar, ChannelBanner} from './compositions/Channel';
 import {FeatureDemo} from './compositions/FeatureDemo';
 import {Tips} from './compositions/Tips';
 import {Trust} from './compositions/Trust';
@@ -58,5 +59,7 @@ export const Root: React.FC = () => (
     {reel('FeatureDemo', FeatureDemo, featureDemoSchema, featureDemoExample, totalSeconds.FeatureDemo)}
     {reel('Tips', Tips, tipsSchema, tipsExample, totalSeconds.Tips)}
     {reel('Trust', Trust, trustSchema, trustExample, totalSeconds.Trust)}
+    <Still id="ChannelBanner" component={ChannelBanner} width={BANNER.width} height={BANNER.height} />
+    <Still id="ChannelAvatar" component={ChannelAvatar} width={AVATAR.width} height={AVATAR.height} />
   </>
 );
