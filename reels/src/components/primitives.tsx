@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Audio,
   Easing,
+  Img,
   interpolate,
   spring,
   staticFile,
@@ -11,8 +12,17 @@ import {
 } from 'remotion';
 import {mono, sans, serif} from '../fonts';
 import type {AudioProps} from '../schemas';
-import {END_CARD_LINE, LANDING_URL, MAKER, SAFE, STAGE, theme} from '../theme';
+import {getProduct, type Product} from '../products';
+import {MAKER, SAFE, STAGE, theme} from '../theme';
 import {LatelingMark} from './Icons';
+
+/** The product a video is about. Set once per composition in Root.tsx from the "product" prop. */
+const ProductContext = React.createContext<Product>(getProduct(undefined));
+export const ProductProvider: React.FC<{id?: string; children: React.ReactNode}> = ({id, children}) => (
+  <ProductContext.Provider value={getProduct(id)}>{children}</ProductContext.Provider>
+);
+export const useProduct = () => React.useContext(ProductContext);
+export const accentOf = (p: Product) => p.color ?? theme.primary;
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
@@ -313,13 +323,45 @@ export const ClickTarget: React.FC<{
   </span>
 );
 
-/** The closing card. Identical in every composition. */
+/** The product's logo: the built-in Lateling mark, an image from reels/public, or a letter tile. */
+export const ProductMark: React.FC<{product: Product; size: number}> = ({product, size}) => {
+  if (product.logo === 'lateling') return <LatelingMark size={size} />;
+  if (product.logo) {
+    return <Img src={resolveSrc(product.logo)} style={{width: size, height: size, objectFit: 'contain', borderRadius: size * 0.22}} />;
+  }
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.24,
+        background: accentOf(product),
+        color: '#fff',
+        fontFamily: serif,
+        fontWeight: 700,
+        fontSize: size * 0.58,
+        lineHeight: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: theme.shadow,
+      }}
+    >
+      {product.name.trim()[0].toUpperCase()}
+    </div>
+  );
+};
+
+/** The closing card. Same layout in every composition, filled from the product file. */
 export const EndCard: React.FC = () => {
+  const product = useProduct();
   const a = useEnter(0);
   const b = useEnter(6);
   const c = useEnter(12);
   const d = useEnter(18);
   const rise = (p: number) => ({opacity: p, transform: `translateY(${(1 - p) * 24}px)`});
+  const n = product.name.length;
+  const nameSize = n <= 9 ? 150 : n <= 12 ? 120 : n <= 16 ? 96 : 80;
   return (
     <AbsoluteFill
       style={{
@@ -332,15 +374,25 @@ export const EndCard: React.FC = () => {
       }}
     >
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', ...rise(a)}}>
-        <LatelingMark size={170} />
-        <div style={{fontFamily: serif, fontWeight: 700, fontSize: 150, letterSpacing: '-0.02em', marginTop: 30, lineHeight: 1.15}}>
-          Lateling
+        <ProductMark product={product} size={170} />
+        <div
+          style={{
+            fontFamily: serif,
+            fontWeight: 700,
+            fontSize: nameSize,
+            letterSpacing: '-0.02em',
+            marginTop: 30,
+            lineHeight: 1.15,
+            textAlign: 'center',
+          }}
+        >
+          {product.name}
         </div>
       </div>
       <div
         style={{
           marginTop: 44,
-          background: theme.primary,
+          background: accentOf(product),
           color: '#fff',
           fontSize: 46,
           fontWeight: 600,
@@ -351,9 +403,9 @@ export const EndCard: React.FC = () => {
           ...rise(b),
         }}
       >
-        {END_CARD_LINE}
+        {product.endCardLine}
       </div>
-      <div style={{marginTop: 40, fontSize: 36, fontWeight: 500, color: theme.inkMuted, ...rise(c)}}>{LANDING_URL}</div>
+      <div style={{marginTop: 40, fontSize: 36, fontWeight: 500, color: theme.inkMuted, ...rise(c)}}>{product.url}</div>
       <div style={{marginTop: 56, display: 'flex', alignItems: 'baseline', gap: 14, fontSize: 32, color: theme.inkSubtle, ...rise(d)}}>
         <span>by</span>
         <span style={{fontFamily: mono, fontWeight: 500, fontSize: 38}}>
@@ -366,7 +418,7 @@ export const EndCard: React.FC = () => {
   );
 };
 
-const resolveSrc = (src: string) => (/^https?:\/\//.test(src) ? src : staticFile(src));
+export const resolveSrc = (src: string) => (/^https?:\/\//.test(src) ? src : staticFile(src));
 
 /** Optional music bed (looped, faded out at the end) and optional voiceover. */
 export const AudioLayer: React.FC<{audio: AudioProps}> = ({audio}) => {

@@ -2,7 +2,7 @@
 // with each line starting at its scene, and stretches scenes that are too short for their line.
 // Speech comes from Gemini text-to-speech and needs GEMINI_API_KEY in the environment.
 import {buildSync} from 'esbuild';
-import {mkdirSync, mkdtempSync, writeFileSync} from 'node:fs';
+import {mkdirSync, mkdtempSync, readFileSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -10,8 +10,12 @@ import {pathToFileURL} from 'node:url';
 const MODEL = process.env.TTS_MODEL || 'gemini-3.8-flash-tts';
 const VOICE = process.env.TTS_VOICE || 'Sulafat';
 const STYLE = process.env.TTS_STYLE ?? 'Calm, friendly and clear. Natural pace.';
-// The end card always says the same thing, so a script cannot change it.
-const END_CARD_LINE = 'Lateling. Free plan on the Shopify App Store.';
+// The end card line comes from the product file, so a script cannot change it.
+const endCardLine = (root, props) => {
+  const id = props.product ?? 'lateling';
+  if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`bad product id "${id}"`);
+  return JSON.parse(readFileSync(path.join(root, 'products', `${id}.json`), 'utf8')).spokenEnd;
+};
 
 const RATE = 24000; // Hz, mono, 16-bit
 const LEAD = 0.2; // seconds of quiet before a line
@@ -91,12 +95,7 @@ const loadTiming = async (root, comp) => {
     outfile,
   });
   const s = await import(pathToFileURL(outfile).href);
-  const schema = {
-    BeforeAfter: s.beforeAfterSchema,
-    FeatureDemo: s.featureDemoSchema,
-    Tips: s.tipsSchema,
-    Trust: s.trustSchema,
-  }[comp];
+  const schema = s.SCHEMAS[comp];
   const ranges = s.z.toJSONSchema(schema, {io: 'input'}).properties.seconds.properties;
   return {scenes: s.SCENES[comp], ranges};
 };
@@ -113,7 +112,7 @@ export const addVoiceover = async ({root, comp, props}) => {
   if (!key && !process.env.TTS_MOCK) throw new Error('GEMINI_API_KEY is not set');
 
   const {scenes, ranges} = await loadTiming(root, comp);
-  const spoken = [...lines, END_CARD_LINE];
+  const spoken = [...lines, endCardLine(root, props)];
   if (spoken.length !== scenes.length) {
     throw new Error(`${comp} needs ${scenes.length - 1} voiceover lines, got ${lines.length}`);
   }

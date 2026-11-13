@@ -13,7 +13,7 @@ const CAN = [
 ];
 const CANNOT = ['Refund an order', 'Cancel an order', 'Change anything'];
 
-const Heading: React.FC<{text: string}> = ({text}) => {
+export const Heading: React.FC<{text: string}> = ({text}) => {
   const p = useEnter(0);
   return (
     <div

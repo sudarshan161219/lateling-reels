@@ -1,0 +1,41 @@
+{
+  "id": "briefd",
+  "name": "Briefd",
+  "kind": "Web app",
+  "url": "briefd-delta.vercel.app",
+  "endCardLine": "No account needed.",
+  "spokenEnd": "Briefd. No account needed.",
+  "audience": "freelancers who collect project requirements from clients",
+  "oneLiner": "Client intake without the friction: send a brief link, watch the answers arrive.",
+  "facts": [
+    "Claim your workspace in one click by entering your name. No passwords and no onboarding emails.",
+    "Add a client, then generate a unique, single-use link for their project. You send it to them yourself, by email or Slack.",
+    "The client opens the link with no login and fills in their scope, budget and goals.",
+    "Your dashboard updates live while the client types.",
+    "Every brief is tied to a client profile in your dashboard, for repeat work.",
+    "The source code is public."
+  ],
+  "dont": [
+    "Do not say it sends the link for you, writes the brief with AI, or makes proposals or contracts."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "No passwords"
+    },
+    {
+      "ok": true,
+      "text": "No login for your client"
+    },
+    {
+      "ok": true,
+      "text": "Public source code"
+    }
+  ],
+  "angles": [
+    "a new client and a messy email thread of requirements",
+    "asking the same intake questions every time",
+    "clients who will not create an account"
+  ],
+  "screens": []
+}

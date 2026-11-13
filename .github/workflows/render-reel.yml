@@ -12,6 +12,10 @@ on:
           - FeatureDemo
           - Tips
           - Trust
+          - ToolDemo
+          - ToolStory
+          - ToolTips
+          - ToolTrust
       props:
         description: Props for the composition, as a JSON string
         required: true
@@ -63,8 +67,9 @@ jobs:
           id="${REQUEST_ID:-$GITHUB_RUN_ID}"
           id="$(printf '%s' "$id" | tr -c 'A-Za-z0-9._-' '-' | cut -c1-60)"
           slug="$(printf '%s' "$COMPOSITION" | tr 'A-Z' 'a-z')"
+          product="$(node -e 'const p=JSON.parse(require("fs").readFileSync("out/props.json","utf8")); process.stdout.write(String(p.product || "lateling"))' | tr -c 'a-z0-9-' '-' | cut -c1-30)"
           echo "tag=reel-$id" >> "$GITHUB_OUTPUT"
-          echo "file=lateling-$slug-$id.mp4" >> "$GITHUB_OUTPUT"
+          echo "file=$product-$slug-$id.mp4" >> "$GITHUB_OUTPUT"
 
       - name: Render
         env:
@@ -90,7 +95,7 @@ jobs:
           node -e '
             const p = JSON.parse(require("fs").readFileSync("out/props.json", "utf8"));
             const one = (s) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, 120);
-            const lines = [`Rendered by workflow run ${process.env.GITHUB_RUN_ID}.`, "", `Hook: ${one(p.hook)}`, `Composition: ${process.env.COMPOSITION}`];
+            const lines = [`Rendered by workflow run ${process.env.GITHUB_RUN_ID}.`, "", `Hook: ${one(p.hook)}`, `Product: ${one(p.product || "lateling")}`, `Composition: ${process.env.COMPOSITION}`];
             if (p.feature) lines.push(`Feature: ${one(p.feature)}`);
             require("fs").writeFileSync("out/notes.md", lines.join("\n") + "\n");
           '

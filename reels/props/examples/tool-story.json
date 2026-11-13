@@ -1,0 +1,42 @@
+{
+  "product": "signoff",
+  "hook": "Still waiting on a client to say yes?",
+  "problem": {
+    "heading": "The usual way",
+    "items": [
+      "Email the design",
+      "Wait for a reply",
+      "Reply all, add a file",
+      "Still no clear answer"
+    ],
+    "caption": "The work is done. The answer is not."
+  },
+  "fix": {
+    "heading": "Upload, share, approve",
+    "items": [
+      "Drag and drop your files",
+      "Send one secure link",
+      "Client hits Approve"
+    ],
+    "screen": "products/signoff/how-it-works.png",
+    "caption": "Your client needs no account to answer."
+  },
+  "perspective": {
+    "line": "A clear yes is worth more than a long thread."
+  },
+  "voiceover": [
+    "Still waiting on a client to say yes?",
+    "You email it, you wait, and the answer is still not clear.",
+    "Upload the work, send one link, and the client approves or asks for changes.",
+    "A clear yes is worth more than a long thread."
+  ],
+  "post": {
+    "caption": "Approvals get stuck in email threads. A link with an Approve button gets a clear answer. How long did your last approval take?",
+    "hashtags": [
+      "freelance",
+      "agency",
+      "clientwork",
+      "design"
+    ]
+  }
+}

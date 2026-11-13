@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Prints the JSON Schema of every composition's props, generated from src/schemas.ts.
-// Use it to refresh prompts/script-writer.md after changing a schema:
-//   npm run schemas
+// Use it to refresh the prompts after changing a schema:
+//   npm run schemas             Lateling compositions, for prompts/script-writer.md
+//   npm run schemas -- --tool   Tool compositions, for prompts/tool-script-writer.md
 import {buildSync} from 'esbuild';
 import {mkdtempSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -23,13 +24,9 @@ buildSync({
 });
 const s = await import(pathToFileURL(outfile).href);
 
-const schemas = {
-  BeforeAfter: s.beforeAfterSchema,
-  FeatureDemo: s.featureDemoSchema,
-  Tips: s.tipsSchema,
-  Trust: s.trustSchema,
-};
-for (const [name, schema] of Object.entries(schemas)) {
+const names = process.argv.includes('--tool') ? s.TOOL_COMPOSITIONS : s.LATELING_COMPOSITIONS;
+for (const name of names) {
+  const schema = s.SCHEMAS[name];
   const json = s.z.toJSONSchema(schema, {io: 'input'});
   delete json.$schema;
   console.log(`### ${name}\n\n\`\`\`json\n${JSON.stringify(json)}\n\`\`\`\n`);

@@ -1,0 +1,31 @@
+{
+  "id": "portfolio-frame",
+  "name": "Portfolio Frame",
+  "kind": "Chrome extension",
+  "url": "nodedev.online",
+  "endCardLine": "On the Chrome Web Store",
+  "spokenEnd": "Portfolio Frame. On the Chrome Web Store.",
+  "audience": "developers and designers who share screenshots of their work",
+  "oneLiner": "Turns raw screenshots and code snippets into polished, presentation-ready images.",
+  "facts": [
+    "A screenshot beautifier and device mockup generator.",
+    "Turns raw screenshots and code snippets into polished, presentation-ready images.",
+    "Everything happens locally.",
+    "A Chrome extension."
+  ],
+  "dont": [
+    "Do not name specific devices, templates, export formats or sizes. They are not on the fact list."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "Runs locally"
+    }
+  ],
+  "angles": [
+    "a plain screenshot in your portfolio",
+    "sharing a code snippet that looks good",
+    "showing a side project on social media"
+  ],
+  "screens": []
+}

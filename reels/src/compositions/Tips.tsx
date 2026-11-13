@@ -6,7 +6,7 @@ import {NeedsAttentionScene} from '../scenes';
 import type {TipsProps} from '../schemas';
 import {SAFE, theme} from '../theme';
 
-const Tip: React.FC<{n: number; total: number; title: string; body: string}> = ({n, total, title, body}) => {
+export const Tip: React.FC<{n: number; total: number; title: string; body: string}> = ({n, total, title, body}) => {
   const a = useEnter(0);
   const b = useEnter(8);
   const c = useEnter(16);

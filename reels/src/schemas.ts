@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {PRODUCT_IDS} from './products';
 
 // ---- shared pieces ----
 
@@ -175,6 +176,88 @@ export const trustSchema = z.object({
   audio: audioSchema,
 });
 
+// ---- Product-agnostic compositions, for any product in reels/products ----
+
+const product = z.enum(PRODUCT_IDS).describe('Id of the product this video is about.');
+const screen = z
+  .string()
+  .describe('File name of one of the product\'s screens, exactly as listed in the product. Leave out if it has none.');
+const shortLine = (max: number) => z.string().min(3).max(max);
+
+// ToolDemo (20 to 25 s): hook, three steps on real screenshots, end card. Needs product screens.
+export const toolDemoSchema = z.object({
+  product,
+  hook,
+  steps: z.array(z.object({screen: screen, caption})).length(3).describe('Three steps, each on one screen.'),
+  seconds: z
+    .object({hook: secs(2, 3, 2.5), step: secs(4.5, 6.5, 5.5), endCard: secs(3, 4, 3.5)})
+    .default({hook: 2.5, step: 5.5, endCard: 3.5}),
+  voiceover: voiceover(4, 'hook, step 1, step 2, step 3'),
+  audio: audioSchema,
+});
+
+// ToolStory (20 to 25 s): hook, the old way, what the product does, a closing thought, end card.
+export const toolStorySchema = z.object({
+  product,
+  hook,
+  problem: z.object({
+    heading: shortLine(40).describe('Title over the old way, for example "The usual way".'),
+    items: z.array(shortLine(34)).min(3).max(4).describe('The manual steps or annoyances, in order.'),
+    caption,
+  }),
+  fix: z.object({
+    heading: shortLine(40),
+    items: z.array(shortLine(34)).length(3).describe('What the product does instead. Facts only.'),
+    screen: screen.optional(),
+    caption,
+  }),
+  perspective: z.object({line: shortLine(70).describe('One calm closing thought, shown large.')}),
+  seconds: z
+    .object({
+      hook: secs(2, 3, 2.5),
+      problem: secs(5, 7, 6),
+      fix: secs(6, 8, 7),
+      perspective: secs(3, 5, 4),
+      endCard: secs(3, 4, 3.5),
+    })
+    .default({hook: 2.5, problem: 6, fix: 7, perspective: 4, endCard: 3.5}),
+  voiceover: voiceover(4, 'hook, the old way, the fix, the closing thought'),
+  audio: audioSchema,
+});
+
+// ToolTips (20 to 25 s): hook, three tips, the product in one scene, end card.
+export const toolTipsSchema = z.object({
+  product,
+  hook,
+  tips: z
+    .array(z.object({title: z.string().min(3).max(44), body: z.string().min(3).max(120)}))
+    .length(3),
+  outro: z.object({caption, screen: screen.optional()}).describe('The one scene that shows the product.'),
+  seconds: z
+    .object({hook: secs(2, 3, 2.5), tip: secs(4, 6, 5), outro: secs(3, 5, 4), endCard: secs(2.5, 4, 3)})
+    .default({hook: 2.5, tip: 5, outro: 4, endCard: 3}),
+  voiceover: voiceover(5, 'hook, tip 1, tip 2, tip 3, the product scene'),
+  audio: audioSchema,
+});
+
+// ToolTrust (20 to 25 s): hook, the product's fixed trust rows, the product, end card. Needs "trust" in the product.
+export const toolTrustSchema = z.object({
+  product,
+  hook,
+  trust: z.object({heading: shortLine(36), caption}),
+  outro: z.object({caption, screen: screen.optional()}),
+  seconds: z
+    .object({hook: secs(2, 3, 2.5), trust: secs(7, 10, 8.5), outro: secs(5, 8, 6.5), endCard: secs(3, 4, 3.5)})
+    .default({hook: 2.5, trust: 8.5, outro: 6.5, endCard: 3.5}),
+  voiceover: voiceover(3, 'hook, the trust list, the product scene'),
+  audio: audioSchema,
+});
+
+export type ToolDemoProps = z.infer<typeof toolDemoSchema>;
+export type ToolStoryProps = z.infer<typeof toolStorySchema>;
+export type ToolTipsProps = z.infer<typeof toolTipsSchema>;
+export type ToolTrustProps = z.infer<typeof toolTrustSchema>;
+
 export type Order = z.infer<typeof orderSchema>;
 export type Template = z.infer<typeof templateSchema>;
 export type AudioProps = z.infer<typeof audioSchema>;
@@ -189,6 +272,10 @@ export const DURATION_LIMITS = {
   FeatureDemo: [20, 25],
   Tips: [20, 25],
   Trust: [20, 25],
+  ToolDemo: [20, 25],
+  ToolStory: [20, 25],
+  ToolTips: [20, 25],
+  ToolTrust: [20, 25],
 } as const;
 
 export const totalSeconds = {
@@ -202,6 +289,16 @@ export const totalSeconds = {
     const s = p.seconds;
     return s.hook + s.readOnly + s.data + s.endCard;
   },
+  ToolDemo: (p: ToolDemoProps) => p.seconds.hook + p.seconds.step * 3 + p.seconds.endCard,
+  ToolStory: (p: ToolStoryProps) => {
+    const s = p.seconds;
+    return s.hook + s.problem + s.fix + s.perspective + s.endCard;
+  },
+  ToolTips: (p: ToolTipsProps) => p.seconds.hook + p.seconds.tip * 3 + p.seconds.outro + p.seconds.endCard,
+  ToolTrust: (p: ToolTrustProps) => {
+    const s = p.seconds;
+    return s.hook + s.trust + s.outro + s.endCard;
+  },
 };
 
 // Scenes in play order, named by their key in "seconds". Used to time the voiceover.
@@ -210,4 +307,22 @@ export const SCENES = {
   FeatureDemo: ['hook', 'step', 'step', 'step', 'endCard'],
   Tips: ['hook', 'tip', 'tip', 'tip', 'lateling', 'endCard'],
   Trust: ['hook', 'readOnly', 'data', 'endCard'],
+  ToolDemo: ['hook', 'step', 'step', 'step', 'endCard'],
+  ToolStory: ['hook', 'problem', 'fix', 'perspective', 'endCard'],
+  ToolTips: ['hook', 'tip', 'tip', 'tip', 'outro', 'endCard'],
+  ToolTrust: ['hook', 'trust', 'outro', 'endCard'],
 } as const;
+
+// Lateling compositions use Lateling's own screens. Tool compositions work for any product.
+export const SCHEMAS = {
+  BeforeAfter: beforeAfterSchema,
+  FeatureDemo: featureDemoSchema,
+  Tips: tipsSchema,
+  Trust: trustSchema,
+  ToolDemo: toolDemoSchema,
+  ToolStory: toolStorySchema,
+  ToolTips: toolTipsSchema,
+  ToolTrust: toolTrustSchema,
+};
+export const LATELING_COMPOSITIONS = ['BeforeAfter', 'FeatureDemo', 'Tips', 'Trust'] as const;
+export const TOOL_COMPOSITIONS = ['ToolDemo', 'ToolStory', 'ToolTips', 'ToolTrust'] as const;

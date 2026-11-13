@@ -1,0 +1,46 @@
+{
+  "id": "lateling",
+  "name": "Lateling",
+  "kind": "Shopify app",
+  "url": "lateling-site.godhustler90956.workers.dev",
+  "endCardLine": "Free plan on the Shopify App Store",
+  "spokenEnd": "Lateling. Free plan on the Shopify App Store.",
+  "logo": "lateling",
+  "audience": "Shopify merchants who get \"where is my order?\" emails",
+  "oneLiner": "A Shopify app, with an optional Gmail add-on for Chrome, for answering \"where is my order?\" emails.",
+  "facts": [
+    "Needs attention list: recent orders that have not shipped after a limit the merchant sets, or that the carrier reports as delayed. Oldest first. Each one has a \"Possibly late\" flag.",
+    "Find an order: search by email, name or order number. Guest checkouts are included. The customer card shows how many orders the customer has placed and how much they have spent.",
+    "Order detail: items, payment status, fulfillment status, shipping address, delivery status (in transit, out for delivery, delayed, delivered), estimated delivery, tracking links, and a \"Copy summary\" button.",
+    "Reply templates: 17 variables, including customer name, order number, total, items, address, tracking number, delivery status, estimated delivery and sign-off. A variable that cannot be filled stays visible so the merchant notices before sending.",
+    "Gmail add-on: a side panel next to each customer email. It inserts a template into the reply. Nothing is sent automatically. It is connected with a one-time code.",
+    "Read-only: two permissions, read_orders and read_customers. It cannot refund, cancel or change anything. Order data goes from Shopify to the merchant's browser and is not stored on Lateling's servers.",
+    "Looks at orders from the last 60 days only.",
+    "Pricing: Free plan with 3 templates, 30 Gmail lookups a month, 1 store. Pro is $9 a month after a 7-day trial, with unlimited templates and lookups and up to 3 stores. Billed through Shopify."
+  ],
+  "dont": [
+    "Do not say it sends emails, replies for the merchant, contacts carriers, predicts delays or issues refunds.",
+    "Do not say it works with any platform other than Shopify, or any mail client other than Gmail in Chrome."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "Reads orders and customers"
+    },
+    {
+      "ok": false,
+      "text": "Refund, cancel or edit orders"
+    },
+    {
+      "ok": false,
+      "text": "Store your order data"
+    }
+  ],
+  "angles": [
+    "answering where is my order emails faster",
+    "orders that shipped late without anyone noticing",
+    "guest checkout customers with no account",
+    "an app that cannot change anything in your store"
+  ],
+  "screens": []
+}

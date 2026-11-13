@@ -1,0 +1,33 @@
+{
+  "product": "invo",
+  "hook": "A client wants a quote by tonight.",
+  "steps": [
+    {
+      "screen": "products/invo/home.png",
+      "caption": "No login. Open it and start."
+    },
+    {
+      "screen": "products/invo/documents.png",
+      "caption": "Pick Quotation. Or invoice, receipt, credit note."
+    },
+    {
+      "screen": "products/invo/home.png",
+      "caption": "Add your logo, export a PDF."
+    }
+  ],
+  "voiceover": [
+    "A client wants a quote by tonight.",
+    "No login. You open it and start.",
+    "Pick quotation, or any of the six document types.",
+    "Add your logo, and export a PDF to send."
+  ],
+  "post": {
+    "caption": "A quote should not need an account and a monthly plan. Invo runs in your browser and exports a PDF. What do you use for quotes right now?",
+    "hashtags": [
+      "freelance",
+      "invoice",
+      "smallbusiness",
+      "webapp"
+    ]
+  }
+}

@@ -1,19 +1,31 @@
-# Lateling reels
+# buildwithsud reels
 
-Generates short vertical videos (1080x1920, 30 fps) for Lateling from a JSON file. Built with [Remotion](https://www.remotion.dev). The app's screens are recreated as React components with example data. Nothing is screen-recorded.
+Generates short vertical videos (1080x1920, 30 fps) about buildwithsud's products from a JSON file. Built with [Remotion](https://www.remotion.dev).
+
+There are two sets of videos:
+
+- **Lateling** has four videos of its own. Its screens are recreated as React components with example data. Nothing is screen-recorded.
+- **Any product**, Lateling included, can use the four Tool videos. They show the product's real screenshots where it has them, and its name and one-liner where it does not.
+
+Each product is one JSON file in `reels/products`. See "Adding a product" below.
 
 ```
 reels/                      Remotion project
   src/components/           NeedsAttentionList, OrderCard, FindOrderSearch, ReplyTemplate,
                             GmailSidePanel, BrowserTabs, and primitives.tsx
                             (Cursor, Highlight, Caption, Hook, EndCard, AudioLayer)
-  src/compositions/         BeforeAfter, FeatureDemo, Tips, Trust
+  src/compositions/         BeforeAfter, FeatureDemo, Tips, Trust (Lateling)
+                            Tool.tsx: ToolDemo, ToolStory, ToolTips, ToolTrust (any product)
+  src/products.ts           loads and checks the product files
   src/schemas.ts            zod schema for each composition's props
+  products/<id>.json        one file per product: name, end card, facts, screens
+  public/products/<id>/     the product's screenshots
   props/examples/           one sample props file per composition
   scripts/render.mjs        the render command
   scripts/voice.mjs         AI voiceover (Gemini text-to-speech)
   public/music/             music tracks; one is picked at random for each render
-prompts/script-writer.md    prompt for Gemini: writes a props JSON
+prompts/script-writer.md    prompt for Gemini: writes a Lateling props JSON
+prompts/tool-script-writer.md  prompt for Gemini: writes a Tool props JSON for any product
 n8n/                        n8n workflow: Gemini script, render, MP4 address
 .github/workflows/render-reel.yml
 ```
@@ -27,7 +39,16 @@ n8n/                        n8n workflow: Gemini script, render, MP4 address
 | `Tips` | 20 to 25 s | Three tips as text on screen. Lateling appears only in the last scene |
 | `Trust` | 20 to 25 s | Read-only access, and order data that stays in the browser |
 
-Every composition ends with the same end card: Lateling, "Free plan on the Shopify App Store", the landing page address, and "by buildwithsud". The maker name is `MAKER` in `reels/src/theme.ts`.
+For any product (the props name it in `product`):
+
+| Id | Length | What it shows | Needs in the product file |
+| --- | --- | --- | --- |
+| `ToolDemo` | 20 to 25 s | Hook, then three steps, each on a real screenshot with a caption | `screens` |
+| `ToolStory` | 20 to 25 s | Hook, the old way (rows with crosses), what the product does (rows with ticks, then a screenshot if given), one closing thought | nothing |
+| `ToolTips` | 20 to 25 s | Three tips as text on screen. The product appears only in the last scene | nothing |
+| `ToolTrust` | 20 to 25 s | The product's fixed trust rows, then the product | `trust` |
+
+Every composition ends with the same end card, filled from the product file: the logo, the name, `endCardLine`, `url`, and "by buildwithsud". The maker name is `MAKER` in `reels/src/theme.ts`.
 
 The length of a video is the sum of the scene lengths in the props file's `seconds` object. A props file that does not match the schema, or whose length is outside the range above, stops the render with a message that names the field.
 
@@ -114,13 +135,38 @@ Reply templates in a props file can use these variables. A variable with no valu
 
 These names are a guess at the app's real ones. If the app uses different names, change `TEMPLATE_VARIABLES` and `variableValues` in `reels/src/components/ReplyTemplate.tsx`, and the list in `prompts/script-writer.md`.
 
+## Adding a product
+
+1. Copy one of the files in `reels/products`, for example `invo.json`, to `reels/products/<id>.json`. The id is lower case letters, digits and dashes, and must match the file name.
+2. Fill it in:
+
+   | Field | Meaning |
+   | --- | --- |
+   | `name`, `kind`, `url` | Shown on the end card and the product card. `url` without `https://` |
+   | `endCardLine` | The line in the end card button, for example "Free. No sign-up." It must be true |
+   | `spokenEnd` | What the voiceover says over the end card |
+   | `audience`, `oneLiner` | Who it is for, and what it does in one line |
+   | `facts` | **Everything a script may say about the product, and nothing else.** Gemini is told to never go beyond this list |
+   | `dont` | Things a script must not say, for example features people might assume |
+   | `trust` | Optional rows for `ToolTrust`. `ok: false` is shown with a cross, so "Uploads your images" with a cross reads as "does not upload" |
+   | `screens` | Optional screenshots: `file` inside `reels/public`, `shows` (what is on it, for Gemini), and an optional `focus` box to zoom into, as fractions of the width and height |
+   | `angles` | Optional topics. The n8n workflow picks one at random |
+   | `color`, `logo` | Optional. Without `logo` the product gets a letter tile in the channel green |
+
+3. Add it to the list in `reels/src/products.ts`, and to `PRODUCTS` in the n8n **Config** node.
+4. Run `npm run typecheck` and open it in `npm run studio`. A file that does not match the format stops with a message naming the field.
+
+Screenshots read best when taken at a narrow window width, about 560 px, at 2x, and cropped to roughly square. Text on a full desktop screenshot is too small on a phone. Put them in `reels/public/products/<id>/`.
+
+The product files for Invo, SignOff, Retain and Briefd use only what their landing pages say, and their screenshots are of the landing pages. The three Chrome extensions (Bot Meter for X, Portfolio Frame, Cutout) have only the one-line description from nodedev.online, no screenshots, and "On the Chrome Web Store" as the end card line. Add facts and in-app screenshots to get better videos.
+
 ## GitHub Action
 
 `.github/workflows/render-reel.yml` runs on `workflow_dispatch`.
 
 | Input | Required | Meaning |
 | --- | --- | --- |
-| `composition` | yes | `BeforeAfter`, `FeatureDemo`, `Tips` or `Trust` |
+| `composition` | yes | `BeforeAfter`, `FeatureDemo`, `Tips`, `Trust`, `ToolDemo`, `ToolStory`, `ToolTips` or `ToolTrust` |
 | `props` | yes | The props, as one JSON string |
 | `request_id` | no | An id you choose. The release is tagged `reel-<request_id>`. Without it the tag is `reel-<run id>` |
 
@@ -153,13 +199,14 @@ npx remotion still src/index.ts ChannelAvatar out/channel-avatar.png
 
 ## n8n workflow
 
-`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then uploads the MP4 to YouTube as a Short. Instagram is posted by hand from the **Posted** node's output. The scheduled run is on Tuesday at 09:00.
+`n8n/lateling-reel-render.workflow.json` is a ready workflow: it picks a product, asks Gemini for a script, starts the Action, waits for the render, then uploads the MP4 to YouTube as a Short. Instagram is posted by hand from the **Posted** node's output. The scheduled run is on Tuesday at 09:00.
 
 ```
 Once a week / Run manually
-  -> Config                 composition for this run, an angle, a store type, request id
-  -> Fetch prompt           prompts/script-writer.md from this repository
-  -> Recent reels           hooks of the last reels, so they are not repeated
+  -> Config                 product and composition for this run, an angle, a store type, request id
+  -> Fetch prompt           prompts/script-writer.md (Lateling) or prompts/tool-script-writer.md
+  -> Fetch product          reels/products/<id>.json from this repository
+  -> Recent reels           hooks of the last reels about this product, so they are not repeated
   -> Build Gemini request
   -> Gemini script          returns the props JSON, with the voiceover lines
   -> Parse props            checks it is JSON, no em dashes, removes "audio", takes out the post text
@@ -196,7 +243,9 @@ Every script follows the same story arc, set in `prompts/script-writer.md`: the 
 
 To keep videos from coming out alike, each run gives Gemini three things: an angle picked at random from `ANGLES` in the **Config** node, a store type picked from `STORES`, and the hooks of recent reels to avoid. The hooks are read from the release notes, so the list covers the reels that still have a release. Edit `ANGLES` to steer what the videos are about. Every angle must be about something the app really does.
 
-A run started with **Run manually** picks the composition and feature at random. Scheduled runs go through `ROTATION` in order, one entry per run, and FeatureDemo runs go through `FEATURES` in order.
+Each run is about one product. Scheduled runs go through `PRODUCTS` in the **Config** node in order, one product per run; put an id in twice to post about it more often, or set `FORCE_PRODUCT`. Lateling runs use the Lateling videos and go through `ROTATION`, and FeatureDemo runs go through `FEATURES`. Other products go through `TOOL_ROTATION`, counted per product. A product without `screens` gets a `ToolStory` instead of a `ToolDemo`, and one without `trust` rows gets a `ToolTips` instead of a `ToolTrust`. For other products the angle comes from the product file's `angles`, and the whole product file is added to the request, so Gemini sees its facts and screens.
+
+A run started with **Run manually** picks the product, the composition and the feature at random.
 
 If the render fails, the workflow stops at **Render failed** after about 13 minutes. The reason is in the run's log under the repository's Actions tab. The usual cause is a script that does not match the schema, for example text that is too long. Running the workflow again gets a new script.
 
@@ -253,9 +302,9 @@ The Action deletes reel releases older than 14 days, so a `videoUrl` stops worki
 
 ## Changing things
 
-- Facts about the app that must never vary (the two permissions, what the app cannot do, the end card text) are fixed in code, not in props: `reels/src/compositions/Trust.tsx` and `reels/src/theme.ts`.
+- Facts that must never vary are fixed outside the props, so a script cannot change them: the end card and trust rows are in each product file in `reels/products`, and Lateling's two permissions are in `reels/src/compositions/Trust.tsx`. A props file may only use screens listed in its product's file.
 - Colours and fonts follow the landing page and live in `reels/src/theme.ts` and `reels/src/fonts.ts`. Fonts are Noto Sans and Noto Serif, loaded from Google Fonts at render time, so the render needs internet access.
-- After changing `reels/src/schemas.ts`, run `npm run schemas` in `reels` and paste the output into the "JSON schemas" section of `prompts/script-writer.md`.
+- After changing `reels/src/schemas.ts`, run `npm run schemas` in `reels` and paste the output into the "JSON schemas" section of `prompts/script-writer.md`. For the Tool videos run `npm run schemas -- --tool` and paste it into `prompts/tool-script-writer.md`. Adding a product changes the `product` list in those schemas too.
 
 ## Remotion licence
 

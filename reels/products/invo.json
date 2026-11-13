@@ -1,0 +1,60 @@
+{
+  "id": "invo",
+  "name": "Invo",
+  "kind": "Web app",
+  "url": "invo-eight.vercel.app",
+  "endCardLine": "Free. No sign-up.",
+  "spokenEnd": "Invo. Free, no sign-up.",
+  "audience": "freelancers and small businesses who send invoices and quotes",
+  "oneLiner": "A free, private invoice, receipt and quote generator that runs in your browser.",
+  "facts": [
+    "Makes six kinds of document: invoice, tax invoice, quotation, estimate, receipt and credit note.",
+    "Unlimited documents, free.",
+    "No login and no sign-up.",
+    "Exports a PDF.",
+    "You can add your own logo.",
+    "Tax is calculated automatically.",
+    "Your data is saved locally in your browser, on your device. It works without needing the internet.",
+    "Clearing the browser cache deletes the saved data, so export a PDF to keep a permanent copy."
+  ],
+  "dont": [
+    "Do not say it sends invoices, takes payments, tracks who has paid, or syncs between devices."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "Saved in your browser"
+    },
+    {
+      "ok": true,
+      "text": "No account needed"
+    },
+    {
+      "ok": false,
+      "text": "Uploaded to a server"
+    }
+  ],
+  "angles": [
+    "sending your first invoice as a freelancer",
+    "a client asks for a quote today",
+    "paying for invoicing software you barely use",
+    "keeping client data off other people's servers",
+    "the six document types and when to use each"
+  ],
+  "screens": [
+    {
+      "file": "products/invo/home.png",
+      "shows": "The Invo home page: \"Get paid faster, look professional\", unlimited invoices, receipts and quotes, and the No Login Needed, PDF Export, Add Your Logo and Auto-Tax Calc labels, with a note that data is saved locally.",
+      "focus": {
+        "x": 0.1,
+        "y": 0.2,
+        "w": 0.8,
+        "h": 0.42
+      }
+    },
+    {
+      "file": "products/invo/documents.png",
+      "shows": "The six document types to pick from: Invoice, Tax Invoice, Quotation, Estimate, Receipt and Credit Note."
+    }
+  ]
+}

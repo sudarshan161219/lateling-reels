@@ -1,0 +1,51 @@
+{
+  "id": "retain",
+  "name": "Retain",
+  "kind": "Web app, public beta",
+  "url": "retain-frontend-gamma.vercel.app",
+  "endCardLine": "Free. No account required.",
+  "spokenEnd": "Retain. Free, no account required.",
+  "audience": "freelancers and agencies on monthly retainers",
+  "oneLiner": "A live progress bar for a client's retainer.",
+  "facts": [
+    "Gives your client a live progress bar for their retainer. You log work, and the client sees the burn rate.",
+    "How it works: set the budget, the total hours for the month. Share the unique link, and the client sees a live progress bar. Log work as you go, and the progress bar updates instantly.",
+    "Updates appear on the client's screen in real time.",
+    "You get a secret admin key. No username or password to forget.",
+    "Clients see exactly where their money is going, down to the decimal.",
+    "No sign-ups. Free forever. No account required.",
+    "Version 1.0, in public beta. Built for freelancers."
+  ],
+  "dont": [
+    "Do not say it sends invoices, takes payments, tracks time automatically or sends reports by email."
+  ],
+  "angles": [
+    "writing \"hours remaining\" emails every month",
+    "a client surprised that the retainer ran out",
+    "showing clients the work without a status call"
+  ],
+  "screens": [
+    {
+      "file": "products/retain/home.png",
+      "shows": "The Retain home page: \"Stop sending hours remaining emails\", and the form to create a dashboard with a client name and hours."
+    },
+    {
+      "file": "products/retain/how-it-works.png",
+      "shows": "How it works in three steps: 1. Set Budget, 2. Share Link, 3. Log Work."
+    }
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "No account required"
+    },
+    {
+      "ok": true,
+      "text": "Secret admin key"
+    },
+    {
+      "ok": false,
+      "text": "Password to forget"
+    }
+  ]
+}

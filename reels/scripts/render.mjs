@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Renders one composition to out/<name>.mp4.
 //   npm run render -- --comp BeforeAfter --props props/examples/before-after.json [--out out/my-reel.mp4]
+//   npm run render -- --comp ToolStory --props props/examples/tool-story.json
 import {spawnSync} from 'node:child_process';
 import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
@@ -8,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {addVoiceover} from './voice.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const COMPS = ['BeforeAfter', 'FeatureDemo', 'Tips', 'Trust'];
+const COMPS = ['BeforeAfter', 'FeatureDemo', 'Tips', 'Trust', 'ToolDemo', 'ToolStory', 'ToolTips', 'ToolTrust'];
 
 const args = process.argv.slice(2);
 const arg = (name) => {
@@ -62,7 +63,7 @@ propsPath = path.join(root, 'out', '.props-final.json');
 writeFileSync(propsPath, JSON.stringify(props));
 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
-const out = path.resolve(process.cwd(), arg('out') ?? path.join(root, 'out', `${comp}-${stamp}.mp4`));
+const out = path.resolve(process.cwd(), arg('out') ?? path.join(root, 'out', `${props.product ?? 'lateling'}-${comp}-${stamp}.mp4`));
 mkdirSync(path.dirname(out), {recursive: true});
 
 const bin = path.join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'remotion.cmd' : 'remotion');

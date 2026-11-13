@@ -1,7 +1,7 @@
 {
   "name": "lateling-reels",
   "version": "1.0.0",
-  "description": "Short-video generator for Lateling, built with Remotion",
+  "description": "Short-video generator for buildwithsud products, built with Remotion",
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "node scripts/render.mjs",

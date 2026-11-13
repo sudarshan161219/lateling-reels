@@ -32,6 +32,4 @@ export const STAGE = {
   height: 1000,
 };
 
-export const LANDING_URL = 'lateling-site.godhustler90956.workers.dev';
-export const END_CARD_LINE = 'Free plan on the Shopify App Store';
 export const MAKER = 'buildwithsud';

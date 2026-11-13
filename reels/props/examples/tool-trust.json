@@ -1,0 +1,25 @@
+{
+  "product": "cutout",
+  "hook": "Where do your photos go when you remove a background?",
+  "trust": {
+    "heading": "Stays on your computer",
+    "caption": "It runs in Chrome. No uploads."
+  },
+  "outro": {
+    "caption": "One click, and the background is gone."
+  },
+  "voiceover": [
+    "Where do your photos go, exactly?",
+    "Cutout runs in Chrome. Your images are not uploaded, and you need no account.",
+    "One click, and the background is gone."
+  ],
+  "post": {
+    "caption": "Most background removers want your photo on their server. This one runs in Chrome. Do you check where your images get uploaded?",
+    "hashtags": [
+      "chromeextension",
+      "privacy",
+      "design",
+      "ai"
+    ]
+  }
+}

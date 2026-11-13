@@ -1,0 +1,38 @@
+{
+  "product": "retain",
+  "hook": "Your retainer ran out. Did the client know?",
+  "tips": [
+    {
+      "title": "Agree on hours up front",
+      "body": "Set the monthly hours before work starts, so nobody guesses."
+    },
+    {
+      "title": "Log work as you go",
+      "body": "Small notes the same day beat a long list at the end of the month."
+    },
+    {
+      "title": "Let the client look anytime",
+      "body": "A page they can open beats a status email they have to wait for."
+    }
+  ],
+  "outro": {
+    "caption": "Retain shows clients a live progress bar.",
+    "screen": "products/retain/how-it-works.png"
+  },
+  "voiceover": [
+    "Your retainer ran out. Did the client know?",
+    "Agree on the monthly hours before work starts.",
+    "Log your work the same day you do it.",
+    "Give the client a page they can check anytime.",
+    "Retain shows them a live progress bar for the retainer."
+  ],
+  "post": {
+    "caption": "Most retainer arguments start with a surprise. A shared progress bar takes the surprise out. How do you show clients their hours?",
+    "hashtags": [
+      "freelance",
+      "retainer",
+      "agency",
+      "clients"
+    ]
+  }
+}

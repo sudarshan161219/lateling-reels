@@ -6,15 +6,69 @@ import beforeAfterExample from '../props/examples/before-after.json';
 import featureDemoExample from '../props/examples/feature-demo.json';
 import tipsExample from '../props/examples/tips.json';
 import trustExample from '../props/examples/trust.json';
+import toolDemoExample from '../props/examples/tool-demo.json';
+import toolStoryExample from '../props/examples/tool-story.json';
+import toolTipsExample from '../props/examples/tool-tips.json';
+import toolTrustExample from '../props/examples/tool-trust.json';
+import {ProductProvider} from './components/primitives';
 import {BeforeAfter} from './compositions/BeforeAfter';
 import {AVATAR, BANNER, ChannelAvatar, ChannelBanner} from './compositions/Channel';
 import {FeatureDemo} from './compositions/FeatureDemo';
 import {Tips} from './compositions/Tips';
+import {ToolDemo, ToolStory, ToolTips, ToolTrust} from './compositions/Tool';
 import {Trust} from './compositions/Trust';
-import {beforeAfterSchema, DURATION_LIMITS, featureDemoSchema, tipsSchema, totalSeconds, trustSchema} from './schemas';
+import {getProduct} from './products';
+import {
+  beforeAfterSchema,
+  DURATION_LIMITS,
+  featureDemoSchema,
+  tipsSchema,
+  toolDemoSchema,
+  toolStorySchema,
+  toolTipsSchema,
+  toolTrustSchema,
+  totalSeconds,
+  trustSchema,
+} from './schemas';
 import {VIDEO} from './theme';
 
 type Loose = Record<string, unknown>;
+
+/**
+ * Checks that need the product file: a script may only use screens the product has,
+ * and ToolTrust needs the product's "trust" rows. Returns the problems found.
+ */
+const productProblems = (id: string, props: Loose): string[] => {
+  if (!('product' in props)) return [];
+  const product = getProduct(props.product as string);
+  const files = new Set(product.screens.map((s) => s.file));
+  const used: string[] = [];
+  const walk = (v: unknown, key = '') => {
+    if (key === 'screen' && typeof v === 'string') used.push(v);
+    else if (Array.isArray(v)) v.forEach((x) => walk(x));
+    else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, k));
+  };
+  walk(props);
+  const problems = used
+    .filter((f) => !files.has(f))
+    .map((f) => `screen "${f}" is not one of ${product.id}'s screens (${[...files].join(', ') || 'it has none'})`);
+  if (id === 'ToolTrust' && !(product.trust?.length)) problems.push(`${product.id} has no "trust" rows in its product file`);
+  return problems;
+};
+
+// Each composition is wrapped so its parts (end card, logo, screens) know the product.
+const wrapped = new Map<React.FC<Loose>, React.FC<Loose>>();
+const withProduct = (C: React.FC<Loose>): React.FC<Loose> => {
+  if (!wrapped.has(C)) {
+    const W: React.FC<Loose> = (props) => (
+      <ProductProvider id={props.product as string | undefined}>
+        <C {...props} />
+      </ProductProvider>
+    );
+    wrapped.set(C, W);
+  }
+  return wrapped.get(C)!;
+};
 
 /**
  * Registers one composition. Before rendering, the input props are checked against the schema
@@ -30,7 +84,7 @@ const reel = <S extends z.ZodType>(
 ) => (
   <Composition
     id={id}
-    component={component as unknown as React.FC<Loose>}
+    component={withProduct(component as unknown as React.FC<Loose>)}
     schema={schema as unknown as AnyZodObject}
     defaultProps={example as Loose}
     width={VIDEO.width}
@@ -43,6 +97,8 @@ const reel = <S extends z.ZodType>(
         const issues = result.error.issues.map((i) => `  ${i.path.join('.') || '(root)'}: ${i.message}`).join('\n');
         throw new Error(`Invalid props for ${id}:\n${issues}`);
       }
+      const problems = productProblems(id, result.data as Loose);
+      if (problems.length) throw new Error(`Invalid props for ${id}:\n${problems.map((p) => `  ${p}`).join('\n')}`);
       const total = seconds(result.data);
       const [min, max] = DURATION_LIMITS[id];
       if (total < min - 0.01 || total > max + 0.01) {
@@ -59,6 +115,10 @@ export const Root: React.FC = () => (
     {reel('FeatureDemo', FeatureDemo, featureDemoSchema, featureDemoExample, totalSeconds.FeatureDemo)}
     {reel('Tips', Tips, tipsSchema, tipsExample, totalSeconds.Tips)}
     {reel('Trust', Trust, trustSchema, trustExample, totalSeconds.Trust)}
+    {reel('ToolDemo', ToolDemo, toolDemoSchema, toolDemoExample, totalSeconds.ToolDemo)}
+    {reel('ToolStory', ToolStory, toolStorySchema, toolStoryExample, totalSeconds.ToolStory)}
+    {reel('ToolTips', ToolTips, toolTipsSchema, toolTipsExample, totalSeconds.ToolTips)}
+    {reel('ToolTrust', ToolTrust, toolTrustSchema, toolTrustExample, totalSeconds.ToolTrust)}
     <Still id="ChannelBanner" component={ChannelBanner} width={BANNER.width} height={BANNER.height} />
     <Still id="ChannelAvatar" component={ChannelAvatar} width={AVATAR.width} height={AVATAR.height} />
   </>

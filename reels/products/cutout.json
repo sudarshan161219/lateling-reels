@@ -1,0 +1,39 @@
+{
+  "id": "cutout",
+  "name": "Cutout",
+  "kind": "Chrome extension",
+  "url": "nodedev.online",
+  "endCardLine": "On the Chrome Web Store",
+  "spokenEnd": "Cutout. On the Chrome Web Store.",
+  "audience": "people who need image backgrounds removed",
+  "oneLiner": "An AI background remover that runs entirely in Chrome.",
+  "facts": [
+    "Removes image backgrounds with AI.",
+    "Runs entirely in Chrome.",
+    "One click to remove a background.",
+    "No uploads and no accounts."
+  ],
+  "dont": [
+    "Do not mention batch processing, file formats, image sizes or editing tools. They are not on the fact list."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "Runs in Chrome"
+    },
+    {
+      "ok": false,
+      "text": "Uploads your images"
+    },
+    {
+      "ok": false,
+      "text": "Needs an account"
+    }
+  ],
+  "angles": [
+    "a product photo that needs a clean background",
+    "uploading private photos to a random website",
+    "removing a background without opening an editor"
+  ],
+  "screens": []
+}

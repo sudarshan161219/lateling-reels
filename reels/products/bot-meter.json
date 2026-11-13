@@ -1,0 +1,35 @@
+{
+  "id": "bot-meter",
+  "name": "Bot Meter for X",
+  "kind": "Chrome extension",
+  "url": "nodedev.online",
+  "endCardLine": "On the Chrome Web Store",
+  "spokenEnd": "Bot Meter for X. On the Chrome Web Store.",
+  "audience": "people who use X and want to spot spam bots",
+  "oneLiner": "Shows each account's daily posting rate next to their name on X.",
+  "facts": [
+    "Shows each account's daily posting rate next to their name on X.",
+    "Helps you spot spam bots at a glance.",
+    "No login or API key needed.",
+    "A Chrome extension."
+  ],
+  "dont": [
+    "Do not say it blocks, mutes, reports or removes accounts, or that it proves an account is a bot. It shows a posting rate."
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "No login"
+    },
+    {
+      "ok": true,
+      "text": "No API key"
+    }
+  ],
+  "angles": [
+    "replies full of accounts that post all day",
+    "telling a busy person from a bot",
+    "a number instead of a guess"
+  ],
+  "screens": []
+}

@@ -1,0 +1,51 @@
+{
+  "id": "signoff",
+  "name": "SignOff",
+  "kind": "Web app, public beta",
+  "url": "signoff-one.vercel.app",
+  "endCardLine": "Free. No sign-ups.",
+  "spokenEnd": "SignOff. Free, no sign-ups.",
+  "audience": "agencies and freelancers who need clients to approve designs and documents",
+  "oneLiner": "A simple way to get a clear yes or no from a client on your work.",
+  "facts": [
+    "Create a temporary, secure workspace in seconds: type a project name and you get a workspace, no login.",
+    "Upload your work by drag and drop.",
+    "Send the unique secure link to your client. The client needs no login and creates no account.",
+    "The client views the files and hits \"Approve\" or requests changes.",
+    "Files are kept in private storage with secure, time-limited access.",
+    "No sign-ups required. Free forever.",
+    "Version 1.0, in public beta. Built for freelancers."
+  ],
+  "dont": [
+    "Do not mention comments threads, version history, notifications, e-signatures or integrations. They are not on the fact list."
+  ],
+  "angles": [
+    "chasing a client for approval over email",
+    "a client who will not make an account just to say yes",
+    "getting a clear approve or request changes before the next phase"
+  ],
+  "screens": [
+    {
+      "file": "products/signoff/home.png",
+      "shows": "The SignOff home page: \"The friction-free way to get client approvals\", with a box to type a project name and Start."
+    },
+    {
+      "file": "products/signoff/how-it-works.png",
+      "shows": "How it works in three steps: 1. Upload, 2. Share, 3. Approve."
+    }
+  ],
+  "trust": [
+    {
+      "ok": true,
+      "text": "No login for your client"
+    },
+    {
+      "ok": true,
+      "text": "Private file storage"
+    },
+    {
+      "ok": true,
+      "text": "Time-limited access"
+    }
+  ]
+}
