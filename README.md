@@ -143,7 +143,7 @@ Each `request_id` can be used once, because a release tag must be unique.
 
 ## YouTube channel art
 
-`ChannelBanner` (2560 x 1440) and `ChannelAvatar` (800 x 800) are stills in the same colours and mark as the end card. The banner keeps its text inside the 1546 x 423 area that phones show. The order cards on the sides only show on desktop and TV.
+`ChannelBanner` (2560 x 1440) and `ChannelAvatar` (800 x 800) are stills for the buildwithsud developer channel, in the same colours as the reels. Add a row to `PROJECTS` in `reels/src/compositions/Channel.tsx` for each new product. The banner keeps its text inside the 1546 x 423 area that phones show. The project cards and terminal on the sides only show on desktop and TV.
 
 ```
 cd reels
