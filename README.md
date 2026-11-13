@@ -27,7 +27,7 @@ n8n/                        n8n workflow: Gemini script, render, MP4 address
 | `Tips` | 20 to 25 s | Three tips as text on screen. Lateling appears only in the last scene |
 | `Trust` | 20 to 25 s | Read-only access, and order data that stays in the browser |
 
-Every composition ends with the same end card: Lateling, "Free plan on the Shopify App Store", and the landing page address.
+Every composition ends with the same end card: Lateling, "Free plan on the Shopify App Store", the landing page address, and "by buildwithsud". The maker name is `MAKER` in `reels/src/theme.ts`.
 
 The length of a video is the sum of the scene lengths in the props file's `seconds` object. A props file that does not match the schema, or whose length is outside the range above, stops the render with a message that names the field.
 

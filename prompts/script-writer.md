@@ -38,7 +38,7 @@ These are the only features. Never mention anything that is not on this list.
 3. No claims that Lateling sends emails, replies for the merchant, contacts carriers, predicts delays, issues refunds, or works with any platform other than Shopify or any mail client other than Gmail in Chrome.
 4. Do not name competitors or other apps.
 5. Example data must be fake but realistic: invented people, order numbers like "#1042", email addresses on example.com, invented street addresses, an invented store. Real carrier names (UPS, USPS, FedEx, DHL) are fine. Tracking numbers must be invented.
-6. Do not write the end card. Every video ends with a fixed card (Lateling, "Free plan on the Shopify App Store", the website). Do not put a call to action, a URL or a price in the last caption.
+6. Do not write the end card. Every video ends with a fixed card (Lateling, "Free plan on the Shopify App Store", the website, "by buildwithsud"). Do not put a call to action, a URL or a price in the last caption.
 7. Leave out the `audio` field unless the request gives you a file name for it.
 
 ## Writing style

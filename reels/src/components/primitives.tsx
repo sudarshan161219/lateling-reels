@@ -9,9 +9,9 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import {sans, serif} from '../fonts';
+import {mono, sans, serif} from '../fonts';
 import type {AudioProps} from '../schemas';
-import {END_CARD_LINE, LANDING_URL, SAFE, STAGE, theme} from '../theme';
+import {END_CARD_LINE, LANDING_URL, MAKER, SAFE, STAGE, theme} from '../theme';
 import {LatelingMark} from './Icons';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -318,6 +318,7 @@ export const EndCard: React.FC = () => {
   const a = useEnter(0);
   const b = useEnter(6);
   const c = useEnter(12);
+  const d = useEnter(18);
   const rise = (p: number) => ({opacity: p, transform: `translateY(${(1 - p) * 24}px)`});
   return (
     <AbsoluteFill
@@ -353,6 +354,14 @@ export const EndCard: React.FC = () => {
         {END_CARD_LINE}
       </div>
       <div style={{marginTop: 40, fontSize: 36, fontWeight: 500, color: theme.inkMuted, ...rise(c)}}>{LANDING_URL}</div>
+      <div style={{marginTop: 56, display: 'flex', alignItems: 'baseline', gap: 14, fontSize: 32, color: theme.inkSubtle, ...rise(d)}}>
+        <span>by</span>
+        <span style={{fontFamily: mono, fontWeight: 500, fontSize: 38}}>
+          <span>{MAKER.replace(/sud$/, '')}</span>
+          <span style={{color: theme.ink}}>sud</span>
+          <span style={{color: theme.primary}}>_</span>
+        </span>
+      </div>
     </AbsoluteFill>
   );
 };
