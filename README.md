@@ -143,7 +143,7 @@ Each `request_id` can be used once, because a release tag must be unique.
 
 ## n8n workflow
 
-`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then posts the MP4 to YouTube and Instagram. The scheduled run is on Tuesday at 09:00.
+`n8n/lateling-reel-render.workflow.json` is a ready workflow: it asks Gemini for a script, starts the Action, waits for the render, then uploads the MP4 to YouTube as a Short. Instagram is posted by hand from the **Posted** node's output. The scheduled run is on Tuesday at 09:00.
 
 ```
 Once a week / Run manually
@@ -161,10 +161,7 @@ Once a week / Run manually
   -> Post it?               yes for scheduled runs, no for runs started by hand
   -> Download video         the MP4 as a file
   -> YouTube upload         a vertical video under 3 minutes is listed as a Short
-  -> Instagram container    hands Instagram the videoUrl and the post text
-  -> Instagram status       checked every 30 s until Instagram has processed the video
-  -> Instagram publish
-  -> Posted                 instagramMediaId, youtubeUrl, youtubeError
+  -> Posted                 youtubeUrl, plus videoUrl and postText for posting to Instagram by hand
 ```
 
 ### Setup
@@ -197,7 +194,7 @@ If the render fails, the workflow stops at **Render failed** after about 13 minu
 
 ### Posting
 
-Scheduled runs post every reel. Runs started by hand post only when `POST_ON_MANUAL` is `true` in the **Config** node.
+Scheduled runs upload every reel to YouTube. Runs started by hand upload only when `POST_ON_MANUAL` is `true` in the **Config** node.
 
 **Schedule.** The **Once a week** node holds the cron expression `0 9 * * 2`: Tuesday at 09:00, about 4 reels a month. For two a week, change it to `0 9 * * 2,5`, which adds Friday. The workflow's time zone is set to `Asia/Kolkata` under its settings. n8n must be running at that time and the workflow must be active. A run that is missed because the computer was off is not made up later.
 
@@ -209,15 +206,9 @@ Scheduled runs post every reel. Runs started by hand post only when `POST_ON_MAN
 
 Google keeps videos uploaded by a new API project private until the project has passed its API audit. Until then the upload works but the Short is not public, whatever `YOUTUBE_PRIVACY` says. The audit is requested with Google's YouTube API Services audit form.
 
-**Instagram.** The account must be a business or creator account connected to a Facebook Page.
+**Instagram, by hand.** Open the run's **Posted** node. Download the MP4 from `videoUrl` and paste `postText` as the caption.
 
-1. At developers.facebook.com create an app and get an access token with the permissions `instagram_basic`, `instagram_content_publish`, `pages_show_list` and `pages_read_engagement`. Exchange it for a long-lived token, since a short one expires within hours.
-2. In n8n create a **Facebook Graph API** credential with that token and select it in the three Instagram nodes.
-3. Put the account's Instagram id in `IG_USER_ID` in the **Config** node. It is the `instagram_business_account.id` of the Page in the Graph API, not the user name.
-
-Instagram downloads the video itself from `videoUrl`, so the repository must stay public.
-
-If the YouTube upload fails, the run continues to Instagram and **Posted** shows the reason in `youtubeError`. If Instagram fails, the run stops with an error. To post to one platform only, remove the other one's nodes and connect around them.
+If the YouTube upload fails, the run stops with an error on the **YouTube upload** node. The video is still on the release page, so you can upload it by hand.
 
 ### The two GitHub calls
 
