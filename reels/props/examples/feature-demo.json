@@ -1,10 +1,10 @@
 {
   "feature": "needs-attention",
-  "hook": "Which orders are late right now?",
+  "hook": "You hear about late orders from the customer.",
   "steps": [
-    "Orders that look late or stuck, oldest first.",
-    "Each one has a Possibly late flag.",
-    "Copy a reply before the customer asks."
+    "Open this list before the inbox. Oldest first.",
+    "Each stuck order has a Possibly late flag.",
+    "Copy a reply and write before they ask."
   ],
   "orders": [
     {
@@ -91,10 +91,10 @@
     "endCard": 3.5
   },
   "voiceover": [
-    "Which of your orders are late right now?",
-    "Lateling lists orders that look late or stuck, oldest first.",
-    "Each one has a Possibly late flag.",
-    "Copy a reply before the customer asks."
+    "You hear about late orders from the customer.",
+    "Start the morning with this list, not with the inbox.",
+    "Lateling flags orders that have not shipped or that the carrier says are delayed.",
+    "Write first. A late order with news feels less late."
   ],
   "audio": {
     "musicVolume": 0.12

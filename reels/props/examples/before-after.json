@@ -57,10 +57,10 @@
     "endCard": 3.5
   },
   "voiceover": [
-    "A customer asks where their order is.",
+    "Maya wants to know where her mugs are.",
     "So you open six tabs to answer one email.",
-    "With Lateling, you search by email and see the order.",
-    "The reply fills itself in. You copy it and send."
+    "With Lateling, you search her email and the order is right there.",
+    "The reply fills in from the order. Finding it was always the slow part."
   ],
   "audio": {
     "musicVolume": 0.12

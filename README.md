@@ -180,10 +180,12 @@ Gemini also writes the text for the post. **Reel ready** gives it in four forms:
 
 | Field | Content |
 | --- | --- |
-| `caption` | 1 to 3 sentences, at most 200 characters |
+| `caption` | 2 or 3 sentences, at most 200 characters: the frustration, a point of view, and a question for the comments. No call to install |
 | `hashtags` | a list of 5 to 8 tags, each with its `#` |
 | `postText` | the caption, a blank line, then all hashtags. For Instagram and Facebook |
 | `postTextShort` | the caption with as many hashtags as fit in 280 characters. For X |
+
+Every script follows the same story arc, set in `prompts/script-writer.md`: the hook names a frustration, the next scene makes it a concrete moment at the example store, Lateling appears as the fix, and one line gives a point of view. Nothing in the video or the caption asks the viewer to install or try the app. The end card is the only mention of the free plan.
 
 To keep videos from coming out alike, each run gives Gemini three things: an angle picked at random from `ANGLES` in the **Config** node, a store type picked from `STORES`, and the hooks of recent reels to avoid. The hooks are read from the release notes, so the list covers the reels that still have a release. Edit `ANGLES` to steer what the videos are about. Every angle must be about something the app really does.
 

@@ -1,5 +1,5 @@
 {
-  "hook": "Lateling can read your orders. Nothing else.",
+  "hook": "Worried an app could change your orders?",
   "readOnly": {
     "heading": "Read-only access",
     "caption": "It cannot refund, cancel or change anything."
@@ -15,8 +15,8 @@
     "endCard": 3.5
   },
   "voiceover": [
-    "Lateling can read your orders. Nothing else.",
-    "It has read-only access. It cannot refund, cancel or change anything.",
+    "Worried an app could change your orders?",
+    "Lateling has read-only access. It cannot refund, cancel or change anything.",
     "Order data goes from Shopify to your browser. It is not stored on our servers."
   ],
   "audio": {
