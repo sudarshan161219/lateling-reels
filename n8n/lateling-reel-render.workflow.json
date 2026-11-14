@@ -483,7 +483,7 @@
         -220
       ],
       "parameters": {
-        "jsCode": "// What was uploaded in this run, and the text for posting it to Instagram by hand.\nconst reel = $('Reel ready').first().json;\nreturn [{json: {\n  product: reel.product,\n  hook: reel.hook,\n  youtubeUrl: `https://www.youtube.com/shorts/${$json.id}`,\n  videoUrl: reel.videoUrl,\n  postText: reel.postText,\n}}];\n"
+        "jsCode": "// What was uploaded in this run, and the text for posting it to Instagram by hand.\nconst reel = $('Reel ready').first().json;\nreturn [{json: {\n  product: reel.product,\n  hook: reel.hook,\n  // The YouTube node returns the new video's id as uploadId.\n  youtubeUrl: `https://www.youtube.com/shorts/${$json.uploadId ?? $json.id}`,\n  videoUrl: reel.videoUrl,\n  postText: reel.postText,\n}}];\n"
       },
       "id": "5ad0aea8-f045-4049-9e87-c2502eebaca3"
     },
