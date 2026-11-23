@@ -32,11 +32,26 @@
     "Do not name or criticise other caption apps by name."
   ],
   "trust": [
-    { "ok": true, "text": "Runs on your PC" },
-    { "ok": false, "text": "Uploads your video" },
-    { "ok": false, "text": "Monthly subscription" },
-    { "ok": true, "text": "No watermark, even free" },
-    { "ok": true, "text": "Fix any word first" }
+    {
+      "ok": true,
+      "text": "Runs on your PC"
+    },
+    {
+      "ok": false,
+      "text": "Uploads your video"
+    },
+    {
+      "ok": false,
+      "text": "Monthly subscription"
+    },
+    {
+      "ok": true,
+      "text": "No watermark, even free"
+    },
+    {
+      "ok": true,
+      "text": "Fix any word first"
+    }
   ],
   "angles": [
     "most people watch Shorts with the sound off",
@@ -52,15 +67,16 @@
     {
       "file": "products/dyncap/how-it-works.png",
       "shows": "How it works in three numbered steps: 1 Open your video (speech turned into timed words on your PC), 2 Fix any word and pick a style, 3 Export a finished .mp4 or a see-through overlay for V2 in Premiere. On the right, a vertical video with the captions EVERY WORD PERFECTLY.",
-      "focus": { "x": 0.03, "y": 0.18, "w": 0.6, "h": 0.66 }
+      "focus": {
+        "x": 0.03,
+        "y": 0.18,
+        "w": 0.6,
+        "h": 0.66
+      }
     },
     {
       "file": "products/dyncap/style-bold-pop.png",
       "shows": "A vertical video frame with the Bold Pop style: big white uppercase words DYNCAP DOES IT, with the spoken word IT in yellow. A free style."
-    },
-    {
-      "file": "products/dyncap/style-clean-subtitle.png",
-      "shows": "A vertical video frame with the Clean Subtitle style: a sentence on a dark box with the spoken word lit up. A free style."
     },
     {
       "file": "products/dyncap/style-karaoke-box.png",
@@ -73,7 +89,12 @@
     {
       "file": "products/dyncap/pricing.png",
       "shows": "Pricing: No subscription. Free, $0 forever: 3 caption styles, finished .mp4 or Premiere overlay, English, Hindi and 90+ languages, no watermark. Pro, $19 one time: all 9 styles, mix your own animations, keyword highlights and emoji, saved presets. Use it on 2 PCs.",
-      "focus": { "x": 0.1, "y": 0.0, "w": 0.8, "h": 0.8 }
+      "focus": {
+        "x": 0.1,
+        "y": 0.0,
+        "w": 0.8,
+        "h": 0.8
+      }
     }
   ]
 }
