@@ -35,7 +35,7 @@
     { "ok": true, "text": "Runs on your PC" },
     { "ok": false, "text": "Uploads your video" },
     { "ok": false, "text": "Monthly subscription" },
-    { "ok": false, "text": "Watermark on free" },
+    { "ok": true, "text": "No watermark, even free" },
     { "ok": true, "text": "Fix any word first" }
   ],
   "angles": [
