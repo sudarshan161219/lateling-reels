@@ -73,7 +73,7 @@
     {
       "file": "products/dyncap/pricing.png",
       "shows": "Pricing: No subscription. Free, $0 forever: 3 caption styles, finished .mp4 or Premiere overlay, English, Hindi and 90+ languages, no watermark. Pro, $19 one time: all 9 styles, mix your own animations, keyword highlights and emoji, saved presets. Use it on 2 PCs.",
-      "focus": { "x": 0.1, "y": 0.28, "w": 0.8, "h": 0.6 }
+      "focus": { "x": 0.1, "y": 0.0, "w": 0.8, "h": 0.8 }
     }
   ]
 }
