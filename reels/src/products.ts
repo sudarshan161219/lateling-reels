@@ -2,6 +2,7 @@ import {z} from 'zod';
 import botMeter from '../products/bot-meter.json';
 import briefd from '../products/briefd.json';
 import cutout from '../products/cutout.json';
+import dyncap from '../products/dyncap.json';
 import invo from '../products/invo.json';
 import lateling from '../products/lateling.json';
 import portfolioFrame from '../products/portfolio-frame.json';
@@ -53,7 +54,7 @@ export const productSchema = z.object({
 
 export type Product = z.infer<typeof productSchema>;
 
-const ALL = [lateling, invo, signoff, retain, briefd, botMeter, portfolioFrame, cutout];
+const ALL = [lateling, invo, signoff, retain, briefd, botMeter, portfolioFrame, cutout, dyncap];
 
 export const PRODUCTS: Record<string, Product> = Object.fromEntries(
   ALL.map((raw) => {

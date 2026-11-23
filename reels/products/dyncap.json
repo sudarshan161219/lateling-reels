@@ -1,0 +1,79 @@
+{
+  "id": "dyncap",
+  "name": "DynCap",
+  "kind": "Windows app",
+  "url": "dyncap.pages.dev",
+  "endCardLine": "Free for Windows. Pro $19 once.",
+  "spokenEnd": "DynCap. Free for Windows.",
+  "logo": "products/dyncap/logo.png",
+  "audience": "people who make Shorts, Reels and TikToks, and freelance editors who caption videos in Premiere Pro",
+  "oneLiner": "Animated word-by-word captions for your videos, made on your own Windows PC. No subscription.",
+  "facts": [
+    "A Windows 10/11 desktop app that adds animated word-by-word captions to videos.",
+    "You open a video or audio file, it turns the speech into words timed to when you say them, and you fix any wrong word like editing a document.",
+    "Transcription runs on your own PC, so your video is not uploaded anywhere. The speech model downloads once (about 480 MB) the first time.",
+    "A 1-minute clip transcribes in under a minute. Making a 60-second captioned video takes about 2 to 3 minutes.",
+    "Exports either a finished .mp4 with captions and audio, ready to post, or a transparent .mov overlay to put on V2 in Premiere Pro.",
+    "Works with any Premiere Pro version because it is a separate app, not a plugin. You do not need Premiere: the .mp4 export is a finished video.",
+    "There is a live preview with sound before you export.",
+    "The free version has 3 caption styles (Bold Pop, Clean Subtitle, Minimal White), both export types, no watermark and no time limit.",
+    "Pro costs $19 once, with no subscription. It adds all 9 styles, your own animations (fade, blur, slide, scale, per phrase or per word), keyword highlights in their own colour with emoji, and saved presets. A Pro key works on 2 PCs.",
+    "Bold Pop: big uppercase words, the spoken word turns yellow and pops. Clean Subtitle: the sentence on a dark box, words light up as they are spoken. Karaoke Box: a box jumps to each word. Neon Glow: glowing letters that slide up.",
+    "Max words on screen sets the pace: 1 to 3 words feels punchy, 5 to 8 reads like subtitles.",
+    "Hindi, Marathi and Nepali come out in proper Devanagari script, and about 90 other languages work too.",
+    "It can also save a plain .srt subtitle file, for example for YouTube.",
+    "Many caption tools and plugins charge a monthly fee, often $10 to $30 a month."
+  ],
+  "dont": [
+    "Do not say it works on Mac, phones or in the browser. It is Windows only.",
+    "Do not say it is a Premiere Pro plugin or panel, or that it edits, cuts or trims your video.",
+    "Do not say it is fully offline without saying the speech model downloads once first.",
+    "Do not say it translates captions into another language, or that it is perfectly accurate.",
+    "Do not name or criticise other caption apps by name."
+  ],
+  "trust": [
+    { "ok": true, "text": "Runs on your PC" },
+    { "ok": false, "text": "Uploads your video" },
+    { "ok": false, "text": "Monthly subscription" },
+    { "ok": false, "text": "Watermark on free" },
+    { "ok": true, "text": "Fix any word first" }
+  ],
+  "angles": [
+    "most people watch Shorts with the sound off",
+    "paying every month for a caption tool",
+    "keyframing word-by-word captions by hand in Premiere",
+    "the speech-to-text got a name wrong",
+    "Hindi captions in proper Devanagari",
+    "a freelance editor captioning ten client videos a week",
+    "punchy 1 to 3 words on screen versus subtitle-style lines",
+    "not wanting to upload unreleased videos to a website"
+  ],
+  "screens": [
+    {
+      "file": "products/dyncap/how-it-works.png",
+      "shows": "How it works in three numbered steps: 1 Open your video (speech turned into timed words on your PC), 2 Fix any word and pick a style, 3 Export a finished .mp4 or a see-through overlay for V2 in Premiere. On the right, a vertical video with the captions EVERY WORD PERFECTLY.",
+      "focus": { "x": 0.03, "y": 0.18, "w": 0.6, "h": 0.66 }
+    },
+    {
+      "file": "products/dyncap/style-bold-pop.png",
+      "shows": "A vertical video frame with the Bold Pop style: big white uppercase words DYNCAP DOES IT, with the spoken word IT in yellow. A free style."
+    },
+    {
+      "file": "products/dyncap/style-clean-subtitle.png",
+      "shows": "A vertical video frame with the Clean Subtitle style: a sentence on a dark box with the spoken word lit up. A free style."
+    },
+    {
+      "file": "products/dyncap/style-karaoke-box.png",
+      "shows": "A vertical video frame with the Karaoke Box style (Pro): a coloured box jumps to each word as it is spoken."
+    },
+    {
+      "file": "products/dyncap/style-neon-glow.png",
+      "shows": "A vertical video frame with the Neon Glow style (Pro): glowing letters that slide up."
+    },
+    {
+      "file": "products/dyncap/pricing.png",
+      "shows": "Pricing: No subscription. Free, $0 forever: 3 caption styles, finished .mp4 or Premiere overlay, English, Hindi and 90+ languages, no watermark. Pro, $19 one time: all 9 styles, mix your own animations, keyword highlights and emoji, saved presets. Use it on 2 PCs.",
+      "focus": { "x": 0.1, "y": 0.28, "w": 0.8, "h": 0.6 }
+    }
+  ]
+}
